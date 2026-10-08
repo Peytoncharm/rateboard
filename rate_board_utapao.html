@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Today Exchange Rate - U-Tapao</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sarabun:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: #ffffff;
+    font-family: 'Sarabun', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0a1628 100%);
+    text-align: center;
+    padding: 2.6vh 2vw 2.2vh;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(245,200,66,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(245,200,66,0.08) 0%, transparent 60%);
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', 'Arial Narrow', sans-serif;
+    font-size: min(8.4vh, 6.4vw);
+    color: #f5c842;
+    letter-spacing: 0.1em;
+    text-shadow: 0 2px 20px rgba(245,200,66,0.3);
+    position: relative;
+    line-height: 1;
+  }
+  .header .sub {
+    font-size: min(2.5vh, 2vw);
+    color: rgba(255,255,255,0.75);
+    margin-top: 0.9vh;
+    position: relative;
+    letter-spacing: 0.12em;
+  }
+  .header .sub b { color: #f5c842; font-weight: 700; }
+
+  .notice {
+    display: none;
+    background: #b45309;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 700;
+    font-size: min(2.8vh, 2.2vw);
+    padding: 1.2vh 2vw;
+  }
+  .notice.show { display: block; }
+  .notice.down { background: #b91c1c; }
+
+  .table-header, .rate-row {
+    display: grid;
+    grid-template-columns: 16vw 1fr 1.3fr 1.2fr;
+    align-items: center;
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+  }
+  .table-header {
+    background: #4a5568;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: min(2.8vh, 2.2vw);
+    letter-spacing: 0.04em;
+    padding-top: 1.3vh;
+    padding-bottom: 1.3vh;
+  }
+  .table-header span { text-align: center; }
+  .rate-rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .rate-row {
+    border-bottom: 3px solid #e2e8f0;
+    flex: 1;
+    min-height: 0;
+  }
+  .rate-row:nth-child(odd) { background: #ffffff; }
+  .rate-row:nth-child(even) { background: #f7fafc; }
+  .flag-container { display: flex; justify-content: center; }
+  .flag-img {
+    width: min(10.5vh, 8vw); height: min(10.5vh, 8vw);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .currency-code {
+    text-align: center;
+    font-size: min(6vh, 4.6vw);
+    font-weight: 800;
+    color: #1a202c;
+  }
+  .currency-desc {
+    text-align: center;
+    font-size: min(4.4vh, 3.3vw);
+    font-weight: 600;
+    color: #4a5568;
+  }
+  .rate-value {
+    text-align: center;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: min(7.6vh, 5.6vw);
+    font-weight: 800;
+    color: #1a202c;
+    font-variant-numeric: tabular-nums;
+  }
+  .rate-value.none { color: #94a3b8; font-size: min(4vh, 3vw); font-family: 'Sarabun', sans-serif; }
+
+  .terms {
+    background: #0a1628;
+    color: #ffffff;
+    text-align: center;
+    font-size: min(2.4vh, 1.9vw);
+    font-weight: 600;
+    padding: 1.2vh 2vw;
+  }
+  .footer {
+    background: #f1f5f9;
+    padding: 0.9vh 2vw;
+    text-align: center;
+    font-size: min(1.7vh, 1.5vw);
+    color: #64748b;
+    border-top: 2px solid #e2e8f0;
+  }
+  .live-dot {
+    display: inline-block;
+    width: 0.7em; height: 0.7em;
+    background: #22c55e;
+    border-radius: 50%;
+    margin-right: 0.4em;
+    animation: pulse 2s infinite;
+  }
+  .live-dot.off { background: #dc2626; animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>TODAY EXCHANGE RATE</h1>
+  <div class="sub"><b>U-TAPAO</b> &nbsp;·&nbsp; <span id="dateDisplay">--</span></div>
+</div>
+<div class="notice" id="notice"></div>
+<div class="table-header">
+  <span>Country</span>
+  <span>Currency</span>
+  <span>Banknotes</span>
+  <span>We buy (THB)</span>
+</div>
+<div class="rate-rows" id="rateRows"></div>
+<div class="terms">Passport required &nbsp;·&nbsp; $1 notes, damaged banknotes and banknotes with pen marks are not accepted</div>
+<div class="footer">
+  <span class="live-dot" id="liveDot"></span>
+  Auto-update every 5 min · Rates for: <span id="rateDate">--</span> · Last update: <span id="lastUpdate">--</span>
+</div>
+
+<script>
+// U-Tapao rate board. Reads the "UTapao_Rate" tab of the Google Sheet "Currency Exchang".
+// Rates are found by the name in column A, so adding or removing rows in the sheet does not break the board.
+// This page never shows sample or made-up rates: if the sheet cannot be read it says so.
+const SHEET_ID = '1dSCN5ba-t6D-HBYTtBwbnOVBBeGwch8oF3lKkzG-sCU';
+const SHEET_NAME = 'UTapao_Rate';
+const RATE_COL = 4;            // column E = "Buying U-Tapao"
+const REFRESH_MS = 5 * 60 * 1000;
+const CACHE_KEY = 'utapaoRateBoard.v1';
+
+// Each line on the board. "names" are the labels in column A of the sheet;
+// when a line covers two notes the lower rate of the two is shown.
+const LINES = [
+  { code: 'USD', desc: '$100 · $50', flag: 'us', names: ['USD 100', 'USD 50'] },
+  { code: 'USD', desc: '$20 · $5',   flag: 'us', names: ['USD 20', 'USD 5'] },
+  { code: 'USD', desc: '$10',        flag: 'us', names: ['USD 10'] },
+  { code: 'EUR', desc: 'Euro',       flag: 'eu', names: ['EUR'] },
+  { code: 'GBP', desc: 'British Pound', flag: 'gb', names: ['GBP'] },
+];
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+let lastGood = null;   // { rates: {name: number}, dateText: string, fetchedAt: ms }
+
+function flagUrl(cc) { return 'https://flagcdn.com/w320/' + cc + '.png'; }
+
+function parseCSV(csv) {
+  const rows = [];
+  for (const raw of csv.split('\n')) {
+    const line = raw.replace(/\r$/, '');
+    if (!line) continue;
+    const cells = []; let cell = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { if (q && line[i + 1] === '"') { cell += '"'; i++; } else { q = !q; } }
+      else if (ch === ',' && !q) { cells.push(cell.trim()); cell = ''; }
+      else { cell += ch; }
+    }
+    cells.push(cell.trim()); rows.push(cells);
+  }
+  return rows;
+}
+
+async function fetchSheet() {
+  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&headers=0&range=A1:E30&sheet=' + encodeURIComponent(SHEET_NAME);
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error('sheet http ' + r.status);
+  const text = await r.text();
+  if (/^\s*</.test(text)) throw new Error('sheet returned a web page, not data');
+  const rows = parseCSV(text);
+  const rates = {};
+  let dateText = '';
+  rows.forEach((row, i) => {
+    const name = (row[0] || '').trim();
+    if (i === 0 && row[1]) dateText = row[1].trim();
+    const v = parseFloat(row[RATE_COL]);
+    if (name && isFinite(v) && v > 0) rates[name] = v;
+  });
+  if (Object.keys(rates).length === 0) throw new Error('no rates in sheet');
+  return { rates, dateText, fetchedAt: Date.now() };
+}
+
+// Today's date in Bangkok as {d, m, y}
+function bangkokToday() {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(new Date());
+  const get = t => parseInt(parts.find(p => p.type === t).value, 10);
+  return { d: get('day'), m: get('month'), y: get('year') };
+}
+
+// Sheet date looks like "8 Oct 2026"
+function isToday(dateText) {
+  const m = /^(\d{1,2})\s+([A-Za-z]{3})[A-Za-z]*\.?\s+(\d{4})$/.exec((dateText || '').trim());
+  if (!m) return false;
+  const t = bangkokToday();
+  return parseInt(m[1], 10) === t.d && MONTHS.indexOf(m[2].toLowerCase()) + 1 === t.m && parseInt(m[3], 10) === t.y;
+}
+
+function lineRate(rates, line) {
+  let best = null;
+  for (const n of line.names) {
+    const v = rates ? rates[n] : undefined;
+    if (!(typeof v === 'number' && isFinite(v) && v > 0)) return null;  // a note is missing: do not guess
+    best = best === null ? v : Math.min(best, v);
+  }
+  return best;
+}
+
+function render(rates) {
+  let h = '';
+  for (const line of LINES) {
+    const v = lineRate(rates, line);
+    const rateHtml = v === null
+      ? '<div class="rate-value none">Ask staff</div>'
+      : '<div class="rate-value">' + v.toFixed(2) + '</div>';
+    h += '<div class="rate-row">' +
+      '<div class="flag-container"><img class="flag-img" src="' + flagUrl(line.flag) + '" alt="" onerror="this.style.visibility=\'hidden\'"></div>' +
+      '<div class="currency-code">' + line.code + '</div>' +
+      '<div class="currency-desc">' + line.desc + '</div>' +
+      rateHtml + '</div>';
+  }
+  document.getElementById('rateRows').innerHTML = h;
+}
+
+function setNotice(text, down) {
+  const el = document.getElementById('notice');
+  el.textContent = text || '';
+  el.className = 'notice' + (text ? ' show' : '') + (down ? ' down' : '');
+}
+
+function updateClock() {
+  document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-US',
+    { timeZone: 'Asia/Bangkok', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function show(failed) {
+  const dot = document.getElementById('liveDot');
+  dot.className = 'live-dot' + (failed ? ' off' : '');
+  if (lastGood && isToday(lastGood.dateText)) {
+    render(lastGood.rates);
+    setNotice('');
+  } else if (lastGood && !failed) {
+    // Sheet is reachable but still holds an earlier day's rates (normal before the 9:00 update).
+    render(lastGood.rates);
+    setNotice('Rates shown are from ' + (lastGood.dateText || 'an earlier day') + ". Today's rates are being updated — please confirm with our staff.");
+  } else {
+    // Cannot read the sheet and nothing valid for today: show no numbers at all.
+    render(null);
+    setNotice('Rates are temporarily unavailable on this screen — please ask our staff.', true);
+  }
+  document.getElementById('rateDate').textContent = lastGood ? (lastGood.dateText || '--') : '--';
+  document.getElementById('lastUpdate').textContent = lastGood
+    ? new Date(lastGood.fetchedAt).toLocaleTimeString('en-GB', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    : '--';
+  updateClock();
+}
+
+async function load() {
+  let failed = false;
+  try {
+    lastGood = await fetchSheet();
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(lastGood)); } catch (e) {}
+  } catch (e) {
+    failed = true;
+    console.log('[UTapaoBoard] ' + e.message);
+  }
+  show(failed);
+}
+
+// After a power cut or restart, start from the last rates this screen read (only used if they are today's).
+try {
+  const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+  if (c && c.rates && typeof c.fetchedAt === 'number') lastGood = c;
+} catch (e) {}
+
+render(null);
+updateClock();
+load();
+setInterval(load, REFRESH_MS);
+setInterval(updateClock, 30 * 1000);
+// At midnight yesterday's rates stop being "today": re-check once a minute so the notice appears on time.
+setInterval(() => show(document.getElementById('liveDot').classList.contains('off')), 60 * 1000);
+</script>
+</body>
+</html>
