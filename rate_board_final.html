@@ -6,8 +6,9 @@
 <title>Today Exchange Rate</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sarabun:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Sizes follow the screen (vh/vw) so the whole board always fits: laptop window, 720p, Full HD or 4K. */
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
+  html, body { height: 100%; overflow: hidden; }
   body {
     background: #ffffff;
     font-family: 'Sarabun', sans-serif;
@@ -18,9 +19,10 @@
   .header {
     background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0a1628 100%);
     text-align: center;
-    padding: 36px 20px 30px;
+    padding: 3vh 2vw 2.6vh;
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
   }
   .header::before {
     content: '';
@@ -31,46 +33,48 @@
       radial-gradient(ellipse at 80% 50%, rgba(245,200,66,0.08) 0%, transparent 60%);
   }
   .header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 86px;
+    font-family: 'Bebas Neue', 'Arial Narrow', sans-serif;
+    font-size: min(8.4vh, 6.4vw);
     color: #f5c842;
-    letter-spacing: 10px;
+    letter-spacing: 0.1em;
     text-shadow: 0 2px 20px rgba(245,200,66,0.3);
     position: relative;
     line-height: 1;
   }
   .header .date {
-    font-size: 20px;
+    font-size: min(2.2vh, 1.8vw);
     color: rgba(255,255,255,0.6);
-    margin-top: 8px;
+    margin-top: 0.8vh;
     position: relative;
-    letter-spacing: 2px;
+    letter-spacing: 0.1em;
   }
   .table-header {
     display: grid;
-    grid-template-columns: 200px 1fr 1fr 1fr;
+    grid-template-columns: 16vw 1fr 1fr 1fr;
     background: #4a5568;
     color: #ffffff;
     font-weight: 700;
-    font-size: 26px;
-    letter-spacing: 1px;
-    padding: 16px 32px;
+    font-size: min(2.8vh, 2.2vw);
+    letter-spacing: 0.04em;
+    padding: 1.4vh 2.5vw;
+    flex-shrink: 0;
   }
   .table-header span { text-align: center; }
-  .rate-rows { flex: 1; display: flex; flex-direction: column; }
+  .rate-rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   .rate-row {
     display: grid;
-    grid-template-columns: 200px 1fr 1fr 1fr;
+    grid-template-columns: 16vw 1fr 1fr 1fr;
     align-items: center;
-    padding: 24px 32px;
+    padding: 0 2.5vw;
     border-bottom: 3px solid #e2e8f0;
     flex: 1;
+    min-height: 0;
   }
   .rate-row:nth-child(odd) { background: #ffffff; }
   .rate-row:nth-child(even) { background: #f7fafc; }
   .flag-container { display: flex; justify-content: center; }
   .flag-img {
-    width: 130px; height: 130px;
+    width: min(14vh, 9vw); height: min(14vh, 9vw);
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid #e2e8f0;
@@ -78,37 +82,38 @@
   }
   .currency-code {
     text-align: center;
-    font-size: 48px;
+    font-size: min(5.4vh, 3.3vw);
     font-weight: 800;
     color: #1a202c;
   }
   .currency-desc {
     text-align: center;
-    font-size: 36px;
+    font-size: min(4vh, 2.8vw);
     font-weight: 600;
     color: #4a5568;
   }
   .rate-value {
     text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 56px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: min(7vh, 4.4vw);
     font-weight: 800;
     color: #1a202c;
   }
   .footer {
     background: #f1f5f9;
-    padding: 14px 24px;
+    padding: 1vh 2vw;
     text-align: center;
-    font-size: 15px;
+    font-size: min(1.6vh, 1.4vw);
     color: #94a3b8;
     border-top: 2px solid #e2e8f0;
+    flex-shrink: 0;
   }
   .live-dot {
     display: inline-block;
-    width: 10px; height: 10px;
+    width: 0.7em; height: 0.7em;
     background: #22c55e;
     border-radius: 50%;
-    margin-right: 6px;
+    margin-right: 0.4em;
     animation: pulse 2s infinite;
   }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
