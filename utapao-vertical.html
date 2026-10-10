@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U-Tapao Exchange Rate (vertical)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sarabun:wght@400;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* VERTICAL (portrait) rate board.
+     The monitor is turned on its side. A smart monitor's own browser cannot rotate the picture,
+     so this page draws itself turned by 90 degrees. Add ?flip to the address if it appears upside down.
+     If the screen is already portrait (for example a PC with Windows set to Portrait) nothing is rotated.
+     --u = 1% of the board's width, --v = 1% of the board's height, whichever way the screen is turned. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0a1628; }
+  html { --u: 1vw; --v: 1vh; }
+  html.turned { --u: 1vh; --v: 1vw; }
+  #stage {
+    position: absolute; top: 50%; left: 50%;
+    width: calc(var(--u) * 100); height: calc(var(--v) * 100);
+    transform: translate(-50%, -50%);
+    background: #ffffff; font-family: 'Sarabun', 'Arial', sans-serif;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  html.turned #stage { transform: translate(-50%, -50%) rotate(-90deg); }
+  html.turned.flip #stage { transform: translate(-50%, -50%) rotate(90deg); }
+
+  .header {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0a1628 100%);
+    text-align: center; padding: calc(var(--v) * 2.2) calc(var(--u) * 3) calc(var(--v) * 1.8); flex-shrink: 0;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', 'Arial Narrow', 'Arial', sans-serif; font-weight: 400;
+    font-size: min(calc(var(--u) * 10.5), calc(var(--v) * 6.2)); color: #f5c842; letter-spacing: 0.06em; line-height: 1;
+  }
+  .header .site { font-size: min(calc(var(--u) * 4.2), calc(var(--v) * 2.4)); color: #ffffff; font-weight: 700; letter-spacing: 0.14em; margin-top: calc(var(--v) * 0.8); }
+  .header .date { font-size: min(calc(var(--u) * 3.1), calc(var(--v) * 1.8)); color: rgba(255,255,255,0.7); margin-top: calc(var(--v) * 0.4); letter-spacing: 0.05em; }
+  .table-header {
+    display: flex; justify-content: space-between; background: #4a5568; color: #fff; font-weight: 700;
+    font-size: min(calc(var(--u) * 3.4), calc(var(--v) * 1.9)); letter-spacing: 0.06em;
+    padding: calc(var(--v) * 0.8) calc(var(--u) * 5); flex-shrink: 0;
+  }
+  .rate-rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .rate-row {
+    flex: 1; min-height: 0; display: flex; align-items: center; gap: calc(var(--u) * 3.5);
+    padding: 0 calc(var(--u) * 5); border-bottom: calc(var(--u) * 0.3) solid #e2e8f0;
+  }
+  .rate-row:nth-child(even) { background: #f7fafc; }
+  .flag-img {
+    width: min(calc(var(--u) * 13), calc(var(--v) * 6.6)); height: min(calc(var(--u) * 13), calc(var(--v) * 6.6));
+    border-radius: 50%; object-fit: cover; border: calc(var(--u) * 0.4) solid #e2e8f0; flex-shrink: 0;
+  }
+  .names { flex: 1; min-width: 0; }
+  .currency-code { font-size: min(calc(var(--u) * 7.4), calc(var(--v) * 3.9)); font-weight: 800; color: #1a202c; line-height: 1.05; }
+  .currency-desc { font-size: min(calc(var(--u) * 3.9), calc(var(--v) * 2.1)); font-weight: 600; color: #4a5568; line-height: 1.2; white-space: nowrap; }
+  .rate-value {
+    font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace; font-weight: 800; color: #1a202c;
+    font-size: min(calc(var(--u) * 12), calc(var(--v) * 6.4)); line-height: 1; white-space: nowrap;
+  }
+  .rate-value.none { font-family: 'Sarabun', 'Arial', sans-serif; font-size: min(calc(var(--u) * 5), calc(var(--v) * 2.8)); color: #a0aec0; font-weight: 700; }
+  .notice { display: none; background: #fef3c7; color: #92400e; font-weight: 700; text-align: center;
+    font-size: min(calc(var(--u) * 3.1), calc(var(--v) * 1.8)); line-height: 1.3; padding: calc(var(--v) * 0.9) calc(var(--u) * 4); flex-shrink: 0; }
+  .notice.show { display: block; }
+  .notice.down { background: #fee2e2; color: #991b1b; }
+  .terms { background: #0a1628; color: #ffffff; text-align: center; font-weight: 600;
+    font-size: min(calc(var(--u) * 2.9), calc(var(--v) * 1.65)); line-height: 1.35; padding: calc(var(--v) * 0.9) calc(var(--u) * 4); flex-shrink: 0; }
+  .terms:empty { display: none; }
+  .footer { background: #f1f5f9; color: #64748b; text-align: center; flex-shrink: 0;
+    font-size: min(calc(var(--u) * 2.3), calc(var(--v) * 1.3)); padding: calc(var(--v) * 0.6) calc(var(--u) * 3); border-top: calc(var(--u) * 0.2) solid #e2e8f0; }
+  .live-dot { display: inline-block; width: 0.7em; height: 0.7em; background: #22c55e; border-radius: 50%; margin-right: 0.4em; animation: pulse 2s infinite; }
+  .live-dot.off { background: #ef4444; animation: none; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.3 } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="header">
+    <h1>TODAY EXCHANGE RATE</h1>
+    <div class="site">U-TAPAO</div>
+    <div class="date" id="dateDisplay">--</div>
+  </div>
+  <div class="table-header"><span>CURRENCY</span><span>WE BUY (THB)</span></div>
+  <div class="rate-rows" id="rateRows"></div>
+  <div class="notice" id="notice"></div>
+  <div class="terms">Passport required. $1 notes, damaged banknotes and banknotes with pen marks are not accepted.</div>
+  <div class="footer"><span class="live-dot" id="liveDot"></span>Rates of <span id="rateDate">--</span> · checked <span id="lastUpdate">--</span></div>
+</div>
+
+<script>
+// Vertical rate board: U-TAPAO. Reads the "UTapao_Rate" tab of the Google Sheet "Currency Exchang".
+// Rates are found by the name in column A. This page never shows sample or made-up rates:
+// if the sheet cannot be read it says so.
+var SHEET_ID = '1dSCN5ba-t6D-HBYTtBwbnOVBBeGwch8oF3lKkzG-sCU';
+var SHEET_NAME = 'UTapao_Rate';
+var RATE_COL = 4;
+var DECIMALS = 2;
+var REFRESH_MS = 5 * 60 * 1000;
+var CACHE_KEY = 'utapaoVerticalBoard.v1';
+// When a line covers two notes the lower rate of the two is shown.
+var LINES = [{"code": "USD", "desc": "$100 · $50 notes", "flag": "us", "names": ["USD 100", "USD 50"]}, {"code": "USD", "desc": "$20 · $5 notes", "flag": "us", "names": ["USD 20", "USD 5"]}, {"code": "USD", "desc": "$10 notes", "flag": "us", "names": ["USD 10"]}, {"code": "EUR", "desc": "Euro", "flag": "eu", "names": ["EUR"]}, {"code": "GBP", "desc": "British Pound", "flag": "gb", "names": ["GBP"]}];
+var MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+var lastGood = null;
+
+// ---- which way is the screen turned? ----
+function applyTurn() {
+  var q = (location.search || '').toLowerCase();
+  var root = document.documentElement;
+  var landscape = window.innerWidth > window.innerHeight;
+  root.className = (landscape && q.indexOf('noturn') < 0 ? 'turned' : '') + (q.indexOf('flip') >= 0 ? ' flip' : '');
+}
+applyTurn();
+window.addEventListener('resize', applyTurn);
+
+function flagUrl(cc) { return 'https://flagcdn.com/w320/' + cc + '.png'; }
+
+function parseCSV(csv) {
+  var rows = [], lines = csv.split('\n');
+  for (var k = 0; k < lines.length; k++) {
+    var line = lines[k].replace(/\r$/, '');
+    if (!line) continue;
+    var cells = [], cell = '', q = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (ch === '"') { if (q && line[i + 1] === '"') { cell += '"'; i++; } else { q = !q; } }
+      else if (ch === ',' && !q) { cells.push(cell.trim()); cell = ''; }
+      else { cell += ch; }
+    }
+    cells.push(cell.trim()); rows.push(cells);
+  }
+  return rows;
+}
+
+var DATE_RE = /^(\d{1,2})\s+([A-Za-z]{3})[A-Za-z]*\.?\s+(\d{4})$/;
+
+function fetchSheet() {
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:csv&headers=0&range=A1:L30&sheet=' + encodeURIComponent(SHEET_NAME);
+  return fetch(url, { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) throw new Error('sheet http ' + r.status);
+    return r.text();
+  }).then(function (text) {
+    if (/^\s*</.test(text)) throw new Error('sheet returned a web page, not data');
+    var rows = parseCSV(text), rates = {}, dateText = '';
+    rows.forEach(function (row, i) {
+      if (i < 2 && !dateText) { for (var c = 0; c < row.length; c++) { if (DATE_RE.test(row[c] || '')) { dateText = row[c]; break; } } }
+      var name = (row[0] || '').trim();
+      var v = parseFloat(String(row[RATE_COL] || '').replace(/,/g, ''));
+      if (name && isFinite(v) && v > 0) rates[name] = v;
+    });
+    if (Object.keys(rates).length === 0) throw new Error('no rates in sheet');
+    return { rates: rates, dateText: dateText, fetchedAt: Date.now() };
+  });
+}
+
+function bangkokToday() {
+  var parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(new Date());
+  function get(t) { for (var i = 0; i < parts.length; i++) if (parts[i].type === t) return parseInt(parts[i].value, 10); }
+  return { d: get('day'), m: get('month'), y: get('year') };
+}
+
+function isToday(dateText) {
+  var m = DATE_RE.exec((dateText || '').trim());
+  if (!m) return false;
+  var t = bangkokToday();
+  return parseInt(m[1], 10) === t.d && MONTHS.indexOf(m[2].toLowerCase()) + 1 === t.m && parseInt(m[3], 10) === t.y;
+}
+
+function lineRate(rates, line) {
+  var best = null;
+  for (var i = 0; i < line.names.length; i++) {
+    var v = rates ? rates[line.names[i]] : undefined;
+    if (!(typeof v === 'number' && isFinite(v) && v > 0)) return null;   // a note is missing: do not guess
+    best = best === null ? v : Math.min(best, v);
+  }
+  return best;
+}
+
+function render(rates) {
+  var h = '';
+  LINES.forEach(function (line) {
+    var v = lineRate(rates, line);
+    h += '<div class="rate-row">' +
+      '<img class="flag-img" src="' + flagUrl(line.flag) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+      '<div class="names"><div class="currency-code">' + line.code + '</div><div class="currency-desc">' + line.desc + '</div></div>' +
+      (v === null ? '<div class="rate-value none">Ask staff</div>' : '<div class="rate-value">' + v.toFixed(DECIMALS) + '</div>') +
+      '</div>';
+  });
+  document.getElementById('rateRows').innerHTML = h;
+}
+
+function setNotice(text, down) {
+  var el = document.getElementById('notice');
+  el.textContent = text || '';
+  el.className = 'notice' + (text ? ' show' : '') + (down ? ' down' : '');
+}
+
+function updateClock() {
+  document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-US',
+    { timeZone: 'Asia/Bangkok', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function show(failed) {
+  document.getElementById('liveDot').className = 'live-dot' + (failed ? ' off' : '');
+  if (lastGood && isToday(lastGood.dateText)) {
+    render(lastGood.rates); setNotice('');
+  } else if (lastGood && !failed) {
+    render(lastGood.rates);
+    setNotice('Rates shown are from ' + (lastGood.dateText || 'an earlier day') + ". Today's rates are being updated. Please confirm with our staff.");
+  } else {
+    render(null);
+    setNotice('Rates are temporarily unavailable on this screen. Please ask our staff.', true);
+  }
+  document.getElementById('rateDate').textContent = lastGood ? (lastGood.dateText || '--') : '--';
+  document.getElementById('lastUpdate').textContent = lastGood
+    ? new Date(lastGood.fetchedAt).toLocaleTimeString('en-GB', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' })
+    : '--';
+  updateClock();
+}
+
+function load() {
+  fetchSheet().then(function (data) {
+    lastGood = data;
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(lastGood)); } catch (e) {}
+    show(false);
+  }).catch(function (e) {
+    console.log('[VerticalBoard] ' + e.message);
+    show(true);
+  });
+}
+
+// After a power cut or restart, start from the last rates this screen read (only used if they are today's).
+try {
+  var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+  if (c && c.rates && typeof c.fetchedAt === 'number') lastGood = c;
+} catch (e) {}
+
+render(null);
+updateClock();
+load();
+setInterval(load, REFRESH_MS);
+setInterval(updateClock, 30 * 1000);
+setInterval(function () { show(document.getElementById('liveDot').className.indexOf('off') >= 0); }, 60 * 1000);
+</script>
+</body>
+</html>
