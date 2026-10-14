@@ -32,11 +32,11 @@
   <div id="status" role="status" hidden>TEST: not started. No keep-awake result has been established.</div>
   <div id="startCover">
     <div class="panel">
-      <h1>U-Tapao display — keep-awake test</h1>
+      <h1>U-Tapao exchange rate display</h1>
       <p>This opens your existing rate board unchanged.<br>No rates or monitor settings are modified.</p>
-      <button id="startButton" type="button" autofocus>START DISPLAY TEST</button>
-      <p>Press the remote's centre OK button.<br>Then leave the remote untouched for at least 60 minutes.</p>
-      <p class="small">Experimental: video playback does not prove that LG's screensaver has been prevented.<br>The browser bar may remain. Success requires watching whether the board stays visible.</p>
+      <button id="startButton" type="button" autofocus>START DISPLAY</button>
+      <p>Press the remote's centre OK button to enter full screen.</p>
+      <p class="small">Keep-awake runs automatically in the background. Press START DISPLAY for full screen.</p>
       <p id="startError" class="small" hidden></p>
     </div>
   </div>
@@ -53,6 +53,9 @@
     var videoState = 'not started';
     var fullscreenState = 'not requested';
     var launching = false;
+    var watchdogTimer = null;
+    var lastVideoTime = -1;
+    var stagnantTicks = 0;
     var params = new URLSearchParams(window.location.search);
     var videoOnly = params.has('videoonly');
     var boardURL = 'https://peytoncharm.github.io/rateboard/utapao-vertical.html';
@@ -84,6 +87,41 @@
       button.focus();
       updateStatus();
     }
+    function ensurePlayback() {
+      video.muted = true;
+      video.defaultMuted = true;
+
+      // If webOS paused/ended the keep-awake media, immediately ask it to resume.
+      if (video.paused || video.ended) {
+        try {
+          var p = video.play();
+          if (p && typeof p.catch === 'function') p.catch(function () {});
+        } catch (e) {}
+      }
+
+      // Detect a decoder that has stopped advancing even though it does not report paused.
+      var now = Number(video.currentTime || 0);
+      if (!video.paused && Math.abs(now - lastVideoTime) < 0.01) stagnantTicks++;
+      else stagnantTicks = 0;
+      lastVideoTime = now;
+
+      // After ~30 seconds with no movement, reload only the background video.
+      // The live rate-board iframe is NOT reloaded or interrupted.
+      if (stagnantTicks >= 3) {
+        stagnantTicks = 0;
+        try {
+          video.load();
+          var retry = video.play();
+          if (retry && typeof retry.catch === 'function') retry.catch(function () {});
+        } catch (e) {}
+      }
+    }
+
+    function startWatchdog() {
+      ensurePlayback();
+      if (!watchdogTimer) watchdogTimer = window.setInterval(ensurePlayback, 10000);
+    }
+
     function requestPageFullscreen() {
       var root = document.documentElement;
       var request = root.requestFullscreen || root.webkitRequestFullscreen || root.webkitRequestFullScreen;
@@ -107,16 +145,18 @@
       videoState = 'starting';
       video.muted = true;
       cover.hidden = true;
-      // Playback and fullscreen are requested directly from a real remote/OK user action.
+      // A real remote/OK action is still used for fullscreen. Playback is also
+      // reinforced here in case the browser blocked muted autoplay at page load.
+      startWatchdog();
       try {
         var playback = video.play();
         if (playback && typeof playback.catch === 'function') {
           playback.catch(function () {
-            fail('Video could not start. Ensure both test files were uploaded into the same GitHub folder, then retry.');
+            fail('Keep-awake playback could not start. Press START DISPLAY again.');
           });
         }
       } catch (err) {
-        fail('This browser could not start the test video.');
+        fail('This browser could not start the keep-awake playback.');
       }
       requestPageFullscreen();
       updateStatus();
@@ -126,8 +166,9 @@
     }
     video.addEventListener('playing', function () { videoState = 'playing'; updateStatus(); });
     video.addEventListener('waiting', function () { videoState = 'buffering'; updateStatus(); });
-    video.addEventListener('stalled', function () { videoState = 'stalled'; updateStatus(); });
-    video.addEventListener('pause', function () { videoState = 'paused'; updateStatus(); });
+    video.addEventListener('stalled', function () { videoState = 'stalled'; updateStatus(); window.setTimeout(ensurePlayback, 250); });
+    video.addEventListener('ended', function () { videoState = 'ended'; updateStatus(); window.setTimeout(ensurePlayback, 50); });
+    video.addEventListener('pause', function () { videoState = 'paused'; updateStatus(); window.setTimeout(ensurePlayback, 250); });
     video.addEventListener('error', function () {
       if (startedAt) fail('The MP4 video failed to load or is unsupported. Check that utapao-keepawake-test.mp4 is beside this page.');
     });
@@ -148,6 +189,7 @@
       updateStatus();
     });
     window.setInterval(updateStatus, 1000);
+    startWatchdog(); // page-load keep-awake: protects against staff forgetting to press START immediately
     window.setTimeout(function () { if (!cover.hidden) button.focus(); }, 500);
   }());
   </script>
