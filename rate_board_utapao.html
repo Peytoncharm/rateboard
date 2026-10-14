@@ -156,7 +156,7 @@
   <span>We buy (THB)</span>
 </div>
 <div class="rate-rows" id="rateRows"></div>
-<div class="terms">Passport required &nbsp;·&nbsp; $1 notes, damaged banknotes and banknotes with pen marks are not accepted</div>
+<div class="terms">Passport required &nbsp;·&nbsp; $1 and $5 notes, damaged banknotes and banknotes with pen marks are not accepted</div>
 <div class="footer">
   <span class="live-dot" id="liveDot"></span>
   Auto-update every 5 min · Rates for: <span id="rateDate">--</span> · Last update: <span id="lastUpdate">--</span>
@@ -176,7 +176,7 @@ const CACHE_KEY = 'utapaoRateBoard.v1';
 // when a line covers two notes the lower rate of the two is shown.
 const LINES = [
   { code: 'USD', desc: '$100 · $50', flag: 'us', names: ['USD 100', 'USD 50'] },
-  { code: 'USD', desc: '$20 · $5',   flag: 'us', names: ['USD 20', 'USD 5'] },
+  { code: 'USD', desc: '$20',        flag: 'us', names: ['USD 20'] },
   { code: 'USD', desc: '$10',        flag: 'us', names: ['USD 10'] },
   { code: 'EUR', desc: 'Euro',       flag: 'eu', names: ['EUR'] },
   { code: 'GBP', desc: 'British Pound', flag: 'gb', names: ['GBP'] },

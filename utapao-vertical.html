@@ -83,7 +83,7 @@
   <div class="table-header"><span>CURRENCY</span><span>WE BUY (THB)</span></div>
   <div class="rate-rows" id="rateRows"></div>
   <div class="notice" id="notice"></div>
-  <div class="terms">Passport required. $1 notes, damaged banknotes and banknotes with pen marks are not accepted.</div>
+  <div class="terms">Passport required. $1 and $5 notes, damaged banknotes and banknotes with pen marks are not accepted.</div>
   <div class="footer"><span class="live-dot" id="liveDot"></span>Rates of <span id="rateDate">--</span> · checked <span id="lastUpdate">--</span></div>
 </div>
 
@@ -98,7 +98,7 @@ var DECIMALS = 2;
 var REFRESH_MS = 5 * 60 * 1000;
 var CACHE_KEY = 'utapaoVerticalBoard.v1';
 // When a line covers two notes the lower rate of the two is shown.
-var LINES = [{"code": "USD", "desc": "$100 · $50 notes", "flag": "us", "names": ["USD 100", "USD 50"]}, {"code": "USD", "desc": "$20 · $5 notes", "flag": "us", "names": ["USD 20", "USD 5"]}, {"code": "USD", "desc": "$10 notes", "flag": "us", "names": ["USD 10"]}, {"code": "EUR", "desc": "Euro", "flag": "eu", "names": ["EUR"]}, {"code": "GBP", "desc": "British Pound", "flag": "gb", "names": ["GBP"]}];
+var LINES = [{"code": "USD", "desc": "$100 · $50 notes", "flag": "us", "names": ["USD 100", "USD 50"]}, {"code": "USD", "desc": "$20 notes", "flag": "us", "names": ["USD 20"]}, {"code": "USD", "desc": "$10 notes", "flag": "us", "names": ["USD 10"]}, {"code": "EUR", "desc": "Euro", "flag": "eu", "names": ["EUR"]}, {"code": "GBP", "desc": "British Pound", "flag": "gb", "names": ["GBP"]}];
 var MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 var lastGood = null;
 
