@@ -27,14 +27,14 @@
 
   .header {
     background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0a1628 100%);
-    text-align: center; padding: calc(var(--v) * 2.2) calc(var(--u) * 3) calc(var(--v) * 1.8); flex-shrink: 0;
+    text-align: center; padding: calc(var(--v) * 1.2) calc(var(--u) * 3) calc(var(--v) * 1.0); flex-shrink: 0;
   }
   .header h1 {
     font-family: 'Bebas Neue', 'Arial Narrow', 'Arial', sans-serif; font-weight: 400;
-    font-size: min(calc(var(--u) * 10.5), calc(var(--v) * 6.2)); color: #f5c842; letter-spacing: 0.06em; line-height: 1;
+    font-size: min(calc(var(--u) * 8.5), calc(var(--v) * 4.6)); color: #f5c842; letter-spacing: 0.06em; line-height: 1;
   }
-  .header .site { font-size: min(calc(var(--u) * 4.2), calc(var(--v) * 2.4)); color: #ffffff; font-weight: 700; letter-spacing: 0.14em; margin-top: calc(var(--v) * 0.8); }
-  .header .date { font-size: min(calc(var(--u) * 3.1), calc(var(--v) * 1.8)); color: rgba(255,255,255,0.7); margin-top: calc(var(--v) * 0.4); letter-spacing: 0.05em; }
+  .header .site { font-size: min(calc(var(--u) * 3.6), calc(var(--v) * 2.0)); color: #ffffff; font-weight: 700; letter-spacing: 0.14em; margin-top: calc(var(--v) * 0.8); }
+  .header .date { font-size: min(calc(var(--u) * 2.8), calc(var(--v) * 1.6)); color: rgba(255,255,255,0.7); margin-top: calc(var(--v) * 0.4); letter-spacing: 0.05em; }
   .table-header {
     display: flex; justify-content: space-between; background: #4a5568; color: #fff; font-weight: 700;
     font-size: min(calc(var(--u) * 3.4), calc(var(--v) * 1.9)); letter-spacing: 0.06em;
@@ -59,6 +59,10 @@
     font-size: min(calc(var(--u) * 11.4), calc(var(--v) * 6.2)); line-height: 1; white-space: nowrap;
   }
   .rate-value.none { font-family: 'Sarabun', 'Arial', sans-serif; font-size: min(calc(var(--u) * 5), calc(var(--v) * 2.8)); color: #a0aec0; font-weight: 700; }
+  .sell-note { background: #1f6f43; color: #fff; font-weight: 800; text-align: center; letter-spacing: 0.04em; line-height: 1.25;
+    font-size: min(calc(var(--u) * 5.2), calc(var(--v) * 2.9)); padding: calc(var(--v) * 1.6) calc(var(--u) * 3); flex-shrink: 0; }
+  .sell-note small.ru { color: #ffffff; margin-top: calc(var(--v) * 0.5); }
+  .sell-note small { display: block; font-weight: 600; font-size: min(calc(var(--u) * 3.4), calc(var(--v) * 1.9)); color: #d9f2da; margin-top: calc(var(--v) * 0.4); letter-spacing: 0.02em; }
   .notice { display: none; background: #fef3c7; color: #92400e; font-weight: 700; text-align: center;
     font-size: min(calc(var(--u) * 3.1), calc(var(--v) * 1.8)); line-height: 1.3; padding: calc(var(--v) * 0.9) calc(var(--u) * 4); flex-shrink: 0; }
   .notice.show { display: block; }
@@ -83,6 +87,7 @@
   <div class="table-header"><span>CURRENCY</span><span>WE BUY (THB)</span></div>
   <div class="rate-rows" id="rateRows"></div>
   <div class="notice" id="notice"></div>
+  <div class="sell-note">WE BUY BACK YOUR BAHT<small>Change THB to USD or EUR before you fly &mdash; ask our staff for today's rate</small><small class="ru">МЫ ВЫКУПАЕМ ВАШИ БАТЫ &mdash; обменяем THB на USD или EUR перед вылетом. Курс уточняйте у сотрудников</small></div>
   <div class="terms">Passport required. $1 and $5 notes, damaged banknotes and banknotes with pen marks are not accepted.</div>
   <div class="footer"><span class="live-dot" id="liveDot"></span>Rates of <span id="rateDate">--</span> · checked <span id="lastUpdate">--</span></div>
 </div>
@@ -98,7 +103,7 @@ var DECIMALS = 2;
 var REFRESH_MS = 5 * 60 * 1000;
 var CACHE_KEY = 'utapaoVerticalBoard.v1';
 // When a line covers two notes the lower rate of the two is shown.
-var LINES = [{"code": "USD", "desc": "$100 · $50 notes", "flag": "us", "names": ["USD 100", "USD 50"]}, {"code": "USD", "desc": "$20 notes", "flag": "us", "names": ["USD 20"]}, {"code": "USD", "desc": "$10 notes", "flag": "us", "names": ["USD 10"]}, {"code": "EUR", "desc": "Euro", "flag": "eu", "names": ["EUR"]}, {"code": "GBP", "desc": "British Pound", "flag": "gb", "names": ["GBP"]}];
+var LINES = [{"code": "USD", "desc": "$100 · $50 notes", "flag": "us", "names": ["USD 100", "USD 50"]}, {"code": "USD", "desc": "$20 notes", "flag": "us", "names": ["USD 20"]}, {"code": "EUR", "desc": "Euro", "flag": "eu", "names": ["EUR"]}, {"code": "GBP", "desc": "British Pound", "flag": "gb", "names": ["GBP"]}];
 var MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 var lastGood = null;
 
