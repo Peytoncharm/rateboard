@@ -56,7 +56,7 @@
   .currency-desc { font-size: min(calc(var(--u) * 3.6), calc(var(--v) * 2.0)); font-weight: 600; color: #4a5568; line-height: 1.2; white-space: nowrap; }
   .rate-value {
     font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace; font-weight: 800; color: #1a202c;
-    font-size: min(calc(var(--u) * 11.4), calc(var(--v) * 6.2)); line-height: 1; white-space: nowrap;
+    font-size: min(calc(var(--u) * 9.0), calc(var(--v) * 5.0)); line-height: 1; white-space: nowrap;
   }
   .rate-value.none { font-family: 'Sarabun', 'Arial', sans-serif; font-size: min(calc(var(--u) * 5), calc(var(--v) * 2.8)); color: #a0aec0; font-weight: 700; }
   .sell-note { background: #1f6f43; color: #fff; font-weight: 800; text-align: center; letter-spacing: 0.04em; line-height: 1.25;
@@ -98,7 +98,7 @@
 var SHEET_ID = '1dSCN5ba-t6D-HBYTtBwbnOVBBeGwch8oF3lKkzG-sCU';
 var SHEET_NAME = 'Rate_Table';
 var RATE_COL = 3;   // column D = Buying ลูกค้า
-var DECIMALS = 2;
+var DECIMALS = 4;
 var REFRESH_MS = 5 * 60 * 1000;
 var CACHE_KEY = 'kohchangVerticalBoard.v1';
 // When a line covers two notes the lower rate of the two is shown.
@@ -182,6 +182,15 @@ function lineRate(rates, line) {
   return best;
 }
 
+// Shown rate = the rate we pay, minus a small daily amount (0.0011-0.0089) in the last two decimals.
+// So the board is NEVER higher than what the POS pays: the customer always gets at least the shown rate.
+function shownRate(v, code, desc) {
+  var key = ((lastGood && lastGood.dateText) || '') + code + desc, n = 0;
+  for (var i = 0; i < key.length; i++) n = (n * 31 + key.charCodeAt(i)) % 1000003;
+  var cut = (11 + n % 79) / 10000;
+  return Math.floor((v - cut) * 10000) / 10000;
+}
+
 function render(rates) {
   var h = '';
   LINES.forEach(function (line) {
@@ -189,7 +198,7 @@ function render(rates) {
     h += '<div class="rate-row">' +
       '<img class="flag-img" src="' + flagUrl(line.flag) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
       '<div class="names"><div class="currency-code">' + line.code + '</div><div class="currency-desc">' + line.desc + '</div></div>' +
-      (v === null ? '<div class="rate-value none">Ask staff</div>' : '<div class="rate-value">' + v.toFixed(DECIMALS) + '</div>') +
+      (v === null ? '<div class="rate-value none">Ask staff</div>' : '<div class="rate-value">' + shownRate(v, line.code, line.desc).toFixed(DECIMALS) + '</div>') +
       '</div>';
   });
   document.getElementById('rateRows').innerHTML = h;
