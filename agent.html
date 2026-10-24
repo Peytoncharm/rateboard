@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Peyton &amp; Charmed Money Exchange — Agent Pass</title>
+  <style>
+    :root { --bg:#0b1f3a; --card:#ffffff; --ink:#0b1f3a; --accent:#e8b325; --muted:#5b6b7f; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .card { background:var(--card); border-radius:20px; width:100%; max-width:420px; padding:24px 22px 20px; box-shadow:0 10px 40px rgba(0,0,0,.35); text-align:center; }
+    .brand { font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
+    h1 { font-size:22px; margin:0 0 4px; }
+    .ru { font-size:15px; color:var(--muted); margin:0 0 18px; }
+    .show { background:#fff6d6; border:3px dashed var(--accent); border-radius:16px; padding:16px 12px; margin:0 0 18px; }
+    .show .label { font-size:13px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:0 0 6px; }
+    .show .agent { font-size:40px; font-weight:800; letter-spacing:.04em; margin:0; line-height:1.1; }
+    .show .when { font-size:14px; color:var(--muted); margin:8px 0 0; }
+    .where { text-align:left; margin:0 0 14px; }
+    .where h2 { font-size:14px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:0 0 8px; }
+    .where p { margin:0 0 6px; font-size:15px; line-height:1.4; }
+    .where b { display:block; }
+    .note { font-size:13px; color:var(--muted); margin:0; line-height:1.4; }
+    .unknown { background:#fdecec; border-color:#d9534f; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="brand">Peyton &amp; Charmed · Money Exchange</p>
+    <h1>Welcome! Please show this screen at our counter.</h1>
+    <p class="ru">Добро пожаловать! Покажите этот экран на нашей стойке.</p>
+
+    <div class="show" id="box">
+      <p class="label">Sent by agent · Агент</p>
+      <p class="agent" id="agent">—</p>
+      <p class="when" id="when"></p>
+    </div>
+
+    <div class="where">
+      <h2>Our counters · Наши стойки</h2>
+      <p><b>U-Tapao International Airport (UTP)</b>Arrivals hall · Зал прилёта</p>
+      <p><b>Koh Chang (KC)</b>Peyton &amp; Charmed Money Exchange</p>
+    </div>
+
+    <p class="note">We buy USD, EUR and GBP. One screen = one visit. Keep this page open or take a screenshot.<br>
+    Покупаем USD, EUR и GBP. Сохраните эту страницу или сделайте скриншот.</p>
+  </div>
+
+  <script>
+    // The QR code links here with ?a=pagus or ?a=odeon.
+    var agents = { pagus: 'PAGUS', odeon: 'ODEON' };
+    var code = (new URLSearchParams(location.search).get('a') || '').toLowerCase();
+    var name = agents[code];
+    var el = document.getElementById('agent');
+    if (name) {
+      el.textContent = name;
+    } else {
+      el.textContent = 'NO AGENT';
+      document.getElementById('box').classList.add('unknown');
+    }
+    var d = new Date();
+    document.getElementById('when').textContent =
+      'Opened ' + d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+  </script>
+</body>
+</html>
