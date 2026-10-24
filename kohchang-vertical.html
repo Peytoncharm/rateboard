@@ -87,6 +87,12 @@
   .header .what { color: #c0392b; }
   .header .pill { background: #0a1628; color: #f5c842; }
   .header .date { color: rgba(10,22,40,0.75); }
+  /* slow flash on the green-button line (1.6 s, gentle, safe speed) */
+  @keyframes kcFlash {
+    0%, 100% { background: #0a1628; color: #f5c842; transform: scale(1); }
+    50% { background: #c0392b; color: #ffffff; transform: scale(1.08); }
+  }
+  .header .pill { animation: kcFlash 1.6s ease-in-out infinite; }
 </style>
 </head>
 <body>
