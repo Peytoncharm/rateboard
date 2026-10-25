@@ -52,7 +52,6 @@
   .rate-row:nth-child(even) { background: #f7fafc; }
   .flag-img {
     width: min(calc(var(--u) * 14), calc(var(--v) * 7.6)); height: min(calc(var(--u) * 14), calc(var(--v) * 7.6));
-    max-height: 84%; aspect-ratio: 1 / 1; max-width: none;
     border-radius: 50%; object-fit: cover; border: calc(var(--u) * 0.6) solid #f5c842; flex-shrink: 0;
     box-shadow: 0 calc(var(--u) * 0.6) calc(var(--u) * 1.8) rgba(10,22,40,0.28);
   }
@@ -60,13 +59,9 @@
   .currency-code { font-size: min(calc(var(--u) * 7.4), calc(var(--v) * 3.9)); font-weight: 800; color: #1a202c; line-height: 1.05; }
   .currency-desc { font-size: min(calc(var(--u) * 3.6), calc(var(--v) * 2.0)); font-weight: 600; color: #4a5568; line-height: 1.2; white-space: nowrap; }
   .rate-value {
-    font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace; font-weight: 600; color: #718096;
-    font-size: min(calc(var(--u) * 2.4), calc(var(--v) * 1.35)); line-height: 1; white-space: nowrap;
+    font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace; font-weight: 800; color: #1a202c;
+    font-size: min(calc(var(--u) * 3.4), calc(var(--v) * 1.9)); line-height: 1; white-space: nowrap;
   }
-  .rate-row.usd-row { flex: 1.5; background: #fff5f5; }
-  .rate-row.usd-row .names { flex: 0 0 auto; }
-  .rate-row.usd-row .currency-desc { white-space: normal; }
-  .rate-value.usd { flex: 1; text-align: right; font-size: min(calc(var(--u) * 12.5), calc(var(--v) * 7.0)); color: #c0392b; font-weight: 800; letter-spacing: -0.03em; }
   .rate-value.none { font-family: 'Sarabun', 'Arial', sans-serif; font-size: min(calc(var(--u) * 5), calc(var(--v) * 2.8)); color: #a0aec0; font-weight: 700; }
   .sell-note { background: #1f6f43; color: #fff; font-weight: 800; text-align: center; letter-spacing: 0.04em; line-height: 1.25;
     font-size: min(calc(var(--u) * 5.2), calc(var(--v) * 2.9)); padding: calc(var(--v) * 1.6) calc(var(--u) * 3); flex-shrink: 0; }
@@ -221,10 +216,10 @@ function render(rates) {
   var h = '';
   LINES.forEach(function (line) {
     var v = lineRate(rates, line);
-    h += '<div class="rate-row' + (line.code === 'USD' ? ' usd-row' : '') + '">' +
+    h += '<div class="rate-row">' +
       '<img class="flag-img" src="' + flagUrl(line.flag) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
-      '<div class="names"><div class="currency-code">' + line.code + '</div><div class="currency-desc">' + (line.code === 'USD' ? line.desc.replace(' notes', '<br>notes') : line.desc) + '</div></div>' +
-      (v === null ? '<div class="rate-value none">Ask staff</div>' : '<div class="rate-value' + (line.code === 'USD' ? ' usd' : '') + '">' + shownRate(v, line.code, line.desc).toFixed(DECIMALS) + '</div>') +
+      '<div class="names"><div class="currency-code">' + line.code + '</div><div class="currency-desc">' + line.desc + '</div></div>' +
+      (v === null ? '<div class="rate-value none">Ask staff</div>' : '<div class="rate-value">' + shownRate(v, line.code, line.desc).toFixed(DECIMALS) + '</div>') +
       '</div>';
   });
   document.getElementById('rateRows').innerHTML = h;
