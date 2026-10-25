@@ -94,14 +94,14 @@
   }
   .header .pill { animation: kcFlash 1.6s ease-in-out infinite; }
 
-  /* Rotating slides (25 Oct 2026): selling message 20 s, then rates 5 s, repeat. */
+  /* Rotating slides (25 Oct 2026): selling message 7 s, then rates 3 s, repeat. */
   .rate-area { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .promo {
     position: absolute; inset: 0; z-index: 5; background: #0a1628; color: #fff; text-align: center;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--v) * 1.6);
-    padding: 0 calc(var(--u) * 5); animation: kcSlides 25s linear infinite;
+    padding: 0 calc(var(--u) * 5); animation: kcSlides 10s linear infinite;
   }
-  @keyframes kcSlides { 0%, 79% { opacity: 1; visibility: visible; } 80%, 99.9% { opacity: 0; visibility: hidden; } 100% { opacity: 1; visibility: visible; } }
+  @keyframes kcSlides { 0%, 69% { opacity: 1; visibility: visible; } 70%, 99.9% { opacity: 0; visibility: hidden; } 100% { opacity: 1; visibility: visible; } }
   .promo-flags img { width: min(calc(var(--u) * 16), calc(var(--v) * 9)); height: min(calc(var(--u) * 16), calc(var(--v) * 9));
     border-radius: 50%; object-fit: cover; border: calc(var(--u) * 0.6) solid #f5c842; margin: 0 calc(var(--u) * 1.5); }
   .promo-big { font-family: 'Arial Black', 'Arial', sans-serif; font-weight: 900; color: #f5c842; line-height: 1.05;
