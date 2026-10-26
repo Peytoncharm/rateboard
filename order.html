@@ -117,15 +117,18 @@
     <input id="room" placeholder="214">
     <label for="pass">Passport number</label>
     <input id="pass" placeholder="C01X00T47">
+    <label for="phone">Your phone / WhatsApp number <span style="font-weight:400; text-transform:none; letter-spacing:0">(optional, so we can reach you)</span></label>
+    <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+49 170 1234567">
     <input type="hidden" id="refcode">
     <p class="fine">Bring this passport to the lobby — we check it before handing over cash. Thai law requires ID for currency exchange.</p>
   </section>
 
   <section class="card" aria-labelledby="s3">
     <div class="step"><span class="n">3</span><h2 id="s3">Send your order</h2></div>
-    <p style="margin:0 0 12px">Fastest way — tap to send on WhatsApp; your order is already written, just press send. We reply within minutes to confirm, then the driver leaves.</p>
+    <p style="margin:0 0 12px">Tap the button: your order goes to our office and WhatsApp opens with the order written for you — <b style="color:var(--gold)">then press the green Send ➤ in WhatsApp</b> so we can chat with you. We reply within minutes to confirm, then the driver leaves.</p>
     <div class="closed" id="closedNote"></div>
-    <a class="cta" id="waBtn" href="#" aria-disabled="true">Send my order on WhatsApp</a>
+    <div class="closed" id="sentNote" style="display:none; border-color:var(--leaf); color:var(--ink)"></div>
+    <a class="cta" id="waBtn" href="#" aria-disabled="true">Send my order → opens WhatsApp</a>
 
     <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--line)">
       <p style="margin:0 0 10px; font-weight:700; color:var(--muted); font-size:.9rem">No WhatsApp? Order another way:</p>
@@ -167,7 +170,7 @@
     </ul>
   </section>
 
-  <footer>Peyton &amp; Charmed · Koh Chang · licensed currency exchange · rates updated every morning<br>page version 52 · 26 Oct</footer>
+  <footer>Peyton &amp; Charmed · Koh Chang · licensed currency exchange · rates updated every morning<br>page version 53 · 26 Oct</footer>
 </div>
 
 <script>
@@ -227,7 +230,7 @@
   document.getElementById("addRow").addEventListener("click", function(){ makeRow(); });
 
   var ids = ["fname","hotel","room","pass"];
-  ids.concat(["refcode"]).forEach(function(id){
+  ids.concat(["refcode","phone"]).forEach(function(id){
     document.getElementById(id).addEventListener("input", update);
   });
 
@@ -312,8 +315,10 @@
     msg.push("Hotel: " + g("hotel"));
     msg.push("Room: " + g("room"));
     msg.push("Passport: " + g("pass"));
+    if(g("phone")){ msg.push("Phone: " + g("phone")); }
     var ref = g("refcode");
     if(ref){ msg.push("Hotel code: " + ref.toUpperCase()); }
+    msg.push("Order no: " + orderId());
     msg.push("I will wait at the hotel LOBBY with this passport.");
     return msg.join("\n");
   }
@@ -321,9 +326,39 @@
   function orderText(lines, total){ return buildMsg(lines, total); }
   function waLink(lines, total){ return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(buildMsg(lines, total)); }
 
+  // --- Order number (one per page visit) and direct copy to our office ---
+  // The guest still has to press Send inside WhatsApp (WhatsApp does not allow
+  // pages to send for them). So the moment they tap the button we ALSO post the
+  // order to our office (LINE), so nothing is lost if they forget to press Send.
+  var OFFICE_URL = "https://tourtransfer.app.n8n.cloud/webhook/cash-order";
+  var _orderId = null;
+  function orderId(){
+    if(_orderId) return _orderId;
+    var d = new Date(), p = function(n){ return (n < 10 ? "0" : "") + n; };
+    _orderId = "KC" + p(d.getMonth()+1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + "-" + Math.random().toString(36).slice(2,5).toUpperCase();
+    return _orderId;
+  }
+  var _sentIds = {};
+  function sendToOffice(text, via){
+    try{
+      var g = function(id){ return document.getElementById(id).value.trim(); };
+      var key = orderId() + "|" + via;
+      if(_sentIds[key]) return;
+      _sentIds[key] = true;
+      var payload = JSON.stringify({ orderId: orderId(), via: via, text: text, name: g("fname"), hotel: g("hotel"), room: g("room"), phone: g("phone"), ref: g("refcode"), rateMode: window._liveRates ? "live" : "saved" });
+      fetch(OFFICE_URL, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "application/json" }, body: payload }).catch(function(){});
+    }catch(e){}
+  }
+  function showSent(){
+    var n = document.getElementById("sentNote");
+    n.innerHTML = "✅ <b>Order no. " + orderId() + " received by our office.</b><br>WhatsApp is opening now — please <b>press the green Send ➤ button</b> in WhatsApp so we can confirm with you there.";
+    n.style.display = "block";
+  }
+
   document.getElementById("copyBtn").addEventListener("click", function(){
     if(this.getAttribute("aria-disabled") === "true") return;
     var txt = window._orderText || "";
+    sendToOffice(txt, "copy");
     var msgEl = document.getElementById("copyMsg");
     function show(m){ msgEl.textContent = m; msgEl.style.display = "block"; }
     if(navigator.clipboard && navigator.clipboard.writeText){
@@ -336,7 +371,9 @@
   });
 
   document.getElementById("waBtn").addEventListener("click", function(e){
-    if(this.getAttribute("aria-disabled") === "true"){ e.preventDefault(); }
+    if(this.getAttribute("aria-disabled") === "true"){ e.preventDefault(); return; }
+    sendToOffice(window._orderText || "", "whatsapp");
+    showSent();
   });
 
   update();
