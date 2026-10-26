@@ -206,6 +206,9 @@ function lineRate(rates, line) {
 // Shown rate = the rate we pay, minus a small daily amount (0.0011-0.0089) in the last two decimals.
 // So the board is NEVER higher than what the POS pays: the customer always gets at least the shown rate.
 function shownRate(v, code, desc) {
+  // A round rate (e.g. 32.00) is shown exactly as 32.0000, so the board keeps the round
+  // number and is still never higher than what the POS pays (Orathai, 26 Oct 2026).
+  if (Math.round(v * 100) % 100 === 0) return Math.round(v);
   var key = ((lastGood && lastGood.dateText) || '') + code + desc, n = 0;
   for (var i = 0; i < key.length; i++) n = (n * 31 + key.charCodeAt(i)) % 1000003;
   var cut = (11 + n % 79) / 10000;
