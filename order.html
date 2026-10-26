@@ -1,0 +1,391 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Koh Chang Cash Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Karla:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#0C3B2E; --card:#0F4433; --ink:#F6F1E6; --muted:#9DBBAB;
+    --line:#24573F; --accent:#D9A441; --accent-ink:#122A20;
+    --gold:#E4B24C; --gold-soft:#123F30; --danger:#F0A48B;
+    --chip:#164A38; --chip-on:#D9A441; --leaf:#79C99E;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:Karla,"Segoe UI",Arial,sans-serif; font-size:16.5px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:520px; margin:0 auto; padding:28px 18px 60px; display:flex; flex-direction:column; gap:22px}
+  header h1{
+    font-family:Marcellus,Georgia,serif; font-weight:700; font-size:2rem; line-height:1.12;
+    margin:0 0 8px; text-wrap:balance;
+  }
+  header p{margin:0; color:var(--muted)}
+  .badge{
+    display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:var(--accent-ink);
+    font-weight:700; font-size:.85rem; letter-spacing:.04em; text-transform:uppercase;
+    padding:6px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px}
+  .step{display:flex; align-items:baseline; gap:10px; margin:0 0 14px}
+  .step .n{
+    font-family:Marcellus,Georgia,serif; font-weight:700; color:var(--accent); font-size:1.15rem;
+  }
+  .step h2{font-size:1.05rem; margin:0; font-weight:700}
+  label{display:block; font-weight:700; font-size:.85rem; letter-spacing:.03em; text-transform:uppercase; color:var(--muted); margin:14px 0 6px}
+  input,select{
+    width:100%; padding:12px 12px; border:1.5px solid var(--line); border-radius:10px;
+    background:var(--ground); color:var(--ink); font:inherit; font-size:1.05rem;
+  }
+  input:focus,select:focus,button:focus-visible{outline:3px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+  .row{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+  .row select{flex:1.4; min-width:0}
+  .row input{flex:1; min-width:0}
+  .row .rm{
+    flex:none; width:44px; height:48px; border:1.5px solid var(--line); background:var(--chip);
+    color:var(--muted); border-radius:10px; font-size:1.25rem; cursor:pointer;
+  }
+  .addbtn{
+    border:1.5px dashed var(--accent); background:transparent; color:var(--accent);
+    font:inherit; font-weight:700; padding:10px 14px; border-radius:10px; cursor:pointer; margin-top:4px;
+  }
+  .result{
+    margin-top:16px; background:var(--gold-soft); border:1.5px solid var(--gold);
+    border-radius:12px; padding:14px 16px;
+  }
+  .result .lines{font-size:.92rem; color:var(--muted); font-variant-numeric:tabular-nums}
+  .result .thb{
+    font-family:Marcellus,Georgia,serif; font-weight:700; font-size:2.1rem; line-height:1.15;
+    color:var(--gold); font-variant-numeric:tabular-nums;
+  }
+  .result .thb small{font-size:1.1rem}
+  .warn{color:var(--danger); font-weight:700; font-size:.95rem; margin:8px 0 0; display:none}
+  ul.rules{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px}
+  ul.rules li{display:flex; gap:10px; align-items:flex-start; color:var(--muted); font-size:.97rem}
+  ul.rules li::before{content:"—"; color:var(--accent); font-weight:700}
+  .cta{
+    display:block; width:100%; border:0; border-radius:12px; padding:16px;
+    background:var(--accent); color:var(--accent-ink); font:inherit; font-weight:700; font-size:1.1rem;
+    cursor:pointer; text-align:center; text-decoration:none;
+  }
+  .cta[aria-disabled="true"]{opacity:.45; cursor:not-allowed}
+  .fine{color:var(--muted); font-size:.88rem; margin-top:10px}
+  .closed{
+    display:none; background:var(--gold-soft); border:1.5px solid var(--gold); color:var(--ink);
+    border-radius:10px; padding:10px 14px; font-size:.95rem; margin-top:12px;
+  }
+  #copyMsg{white-space:pre-wrap; word-break:break-word}
+  #refWrap{display:none; margin-top:14px; background:var(--gold-soft); border:1px solid var(--gold); border-radius:10px; padding:12px 14px}
+  #refWrap .reftag{font-family:Marcellus,Georgia,serif; font-weight:700; color:var(--gold); font-size:1.1rem; letter-spacing:.05em}
+  footer{color:var(--muted); font-size:.85rem; text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="badge">Delivered in 30 minutes</span>
+    <h1>Visit us — or we come to you</h1>
+    <p style="margin:0 0 8px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink)">Safe · Fast · Trusted</p>
+    <p style="margin:0 0 8px; font-weight:700; color:var(--leaf)">🌱 Eco-friendly delivery to your hotel — in 30 minutes</p>
+    <p>Enjoy your time in Kai Bae — we come to you. We meet you securely at your hotel lobby with transparent rates, same as our counter and delivery free, arriving quietly in our hybrid vehicle to preserve Koh Chang's natural beauty. A service by <strong>Peyton &amp; Charmed</strong>.</p>
+    <p style="margin-top:10px; font-family:Marcellus,Georgia,serif; font-style:italic; font-size:1.05rem; color:var(--leaf)">"Change your money, not the island."</p>
+    <div id="refWrap">🏨 Recommended by your hotel — thank you! We'll look after you.<span class="reftag" id="refTag" style="display:none"></span></div>
+  </header>
+
+  <section class="card" aria-labelledby="s1">
+    <div class="step"><span class="n">1</span><h2 id="s1">What notes do you have?</h2></div>
+    <p style="margin:0 0 10px; color:var(--muted); font-size:.95rem">Mixed notes are fine — add a line for each type. Example: ten $100 notes on one line, five $20 notes on another.</p>
+    <label>Your notes</label>
+    <div id="rows"></div>
+    <button type="button" class="addbtn" id="addRow">＋ Add another currency or note size</button>
+    <div class="result" aria-live="polite">
+      <div class="lines" id="rateLine">Rate today: —</div>
+      <div class="thb" id="thbOut">You receive: —</div>
+      <div class="fine" id="rateSrc" style="display:none; color:var(--leaf); margin-top:6px"></div>
+    </div>
+    <p class="warn" id="minWarn">Minimum for delivery is 300 in foreign currency (for example €300 or $300). For smaller amounts you are very welcome at our office — same rate, no minimum.</p>
+    <p class="warn" id="maxWarn">Maximum per delivery is 2,000 in foreign currency (for example €2,000). For larger amounts please visit our office — we are happy to help.</p>
+  </section>
+
+  <section class="card" aria-labelledby="s2">
+    <div class="step"><span class="n">2</span><h2 id="s2">Your details</h2></div>
+    <label for="fname">Full name (as in passport)</label>
+    <input id="fname" autocomplete="name" placeholder="Anna Schmidt">
+    <label for="hotel">Hotel or resort name</label>
+    <input id="hotel" placeholder="Kacha Resort, White Sand Beach">
+    <label for="room">Room number</label>
+    <input id="room" placeholder="214">
+    <label for="pass">Passport number</label>
+    <input id="pass" placeholder="C01X00T47">
+    <input type="hidden" id="refcode">
+    <p class="fine">Bring this passport to the lobby — we check it before handing over cash. Thai law requires ID for currency exchange.</p>
+  </section>
+
+  <section class="card" aria-labelledby="s3">
+    <div class="step"><span class="n">3</span><h2 id="s3">Send your order</h2></div>
+    <p style="margin:0 0 12px">Fastest way — tap to send on WhatsApp; your order is already written, just press send. We reply within minutes to confirm, then the driver leaves.</p>
+    <div class="closed" id="closedNote"></div>
+    <a class="cta" id="waBtn" href="#" aria-disabled="true">Send my order on WhatsApp</a>
+
+    <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--line)">
+      <p style="margin:0 0 10px; font-weight:700; color:var(--muted); font-size:.9rem">No WhatsApp? Order another way:</p>
+      <a class="cta" id="callBtn" style="background:var(--card); color:var(--accent); border:2px solid var(--accent); margin-bottom:10px" href="tel:+66889877070">📞 Call us: 088-987-7070</a>
+      <button type="button" class="cta" id="copyBtn" style="background:var(--card); color:var(--accent); border:2px solid var(--accent)" aria-disabled="true">📋 Copy my order — send by LINE, SMS or email</button>
+      <p class="fine" id="copyMsg" style="display:none; color:var(--leaf); font-weight:700"></p>
+      <p class="fine">LINE / email: kohchang@peytonandcharmed.com · we confirm every order before the driver leaves.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <ul class="rules">
+      <li>Delivery daily 10:00 – 17:00. Last order 16:30. No night deliveries.</li>
+      <li>We meet you at your hotel lobby or reception only — never rooms, beaches or car parks.</li>
+      <li>Minimum 300, maximum 2,000 in foreign currency per delivery (e.g. €300 – €2,000). Smaller or larger amounts are welcome at our office.</li>
+      <li>You count the cash in front of our driver, then scan our card to confirm on WhatsApp that it was counted and received — that message is your receipt.</li>
+      <li>Torn or marked notes get a lower rate, or may be declined at our discretion.</li>
+      <li>Rates are valid for same-day delivery only. Orders delivered the next day are confirmed on WhatsApp at that day's rate before the driver leaves.</li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="s4">
+    <div class="step"><span class="n">＋</span><h2 id="s4">Prefer to visit? We have a real office</h2></div>
+    <p style="margin:0 0 10px">You're welcome to exchange at our counter instead — same rates, no minimum. Come say hello and see who you're dealing with.</p>
+    <p style="margin:0 0 4px; font-weight:700">Peyton &amp; Charmed Money Exchange</p>
+    <p style="margin:0 0 14px; color:var(--muted)">53 Kai Bae Beach, Koh Chang, Trat 23170</p>
+    <a class="cta" style="background:var(--card); color:var(--accent); border:2px solid var(--accent)" href="https://www.google.com/maps/place/Peyton+%26+Charmed+Koh+Chang+Transfers+%26+Tours/@12.0290495,102.2901778,17z/data=!3m1!4b1!4m6!3m5!1s0x3104110054b92205:0xbf11bfae5855605c!8m2!3d12.0290495!4d102.2927527!16s%2Fg%2F11yr0xlnhb" target="_blank" rel="noopener">Open in Google Maps</a>
+  </section>
+
+  <footer>Peyton &amp; Charmed · Koh Chang · licensed currency exchange · rates updated every morning<br>page version 51 · 26 Oct</footer>
+</div>
+
+<script>
+  var WHATSAPP = "66889877070"; // Peyton & Charmed WhatsApp Business (088-987-7070)
+  var RATES = [
+    {code:"EUR",  label:"€ EUR",        rate:35.38},
+    {code:"USD",  label:"$ USD 100/50", rate:31.47},
+    {code:"USDS", label:"$ USD 20/5",   rate:29.79},
+    {code:"GBP",  label:"£ GBP",        rate:42.36},
+    {code:"CHF",  label:"CHF",          rate:38.24},
+    {code:"AUD",  label:"A$ AUD",       rate:21.13},
+    {code:"CAD",  label:"C$ CAD",       rate:21.53}
+  ];
+  var MIN_FX = 300, MAX_FX = 2000; // in foreign-currency units (any currency), per delivery
+
+  // --- Referral code: auto-fill from ?ref= in the web address, then keep the field editable ---
+  (function(){
+    try{
+      var rp = new URLSearchParams(location.search).get("ref");
+      if(rp){
+        rp = rp.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,10);
+        var f = document.getElementById("refcode");
+        if(f) f.value = rp;
+        var w = document.getElementById("refWrap"), t = document.getElementById("refTag");
+        if(w && t){ t.textContent = rp; w.style.display = "block"; }
+      }
+    }catch(e){}
+  })();
+
+  var rowsEl = document.getElementById("rows");
+
+  function makeRow(){
+    var div = document.createElement("div"); div.className = "row";
+    var sel = document.createElement("select");
+    sel.setAttribute("aria-label","Currency and note size");
+    RATES.forEach(function(r,i){
+      var o = document.createElement("option");
+      o.value = i; o.textContent = r.label + " — " + r.rate.toFixed(2);
+      sel.appendChild(o);
+    });
+    var inp = document.createElement("input");
+    inp.type = "number"; inp.inputMode = "decimal"; inp.min = "0"; inp.step = "1";
+    inp.placeholder = "Amount"; inp.setAttribute("aria-label","Amount in this currency");
+    var rm = document.createElement("button");
+    rm.type = "button"; rm.className = "rm"; rm.textContent = "×";
+    rm.setAttribute("aria-label","Remove this line");
+    rm.addEventListener("click", function(){
+      if(rowsEl.children.length > 1){ div.remove(); } else { inp.value = ""; }
+      update();
+    });
+    sel.addEventListener("change", update);
+    inp.addEventListener("input", update);
+    div.appendChild(sel); div.appendChild(inp); div.appendChild(rm);
+    rowsEl.appendChild(div);
+  }
+  makeRow();
+  document.getElementById("addRow").addEventListener("click", function(){ makeRow(); });
+
+  var ids = ["fname","hotel","room","pass"];
+  ids.concat(["refcode"]).forEach(function(id){
+    document.getElementById(id).addEventListener("input", update);
+  });
+
+  function getLines(){
+    var out = [];
+    Array.prototype.forEach.call(rowsEl.children, function(div){
+      var r = RATES[+div.querySelector("select").value];
+      var a = parseFloat(div.querySelector("input").value);
+      if(a > 0){ out.push({r:r, amt:a, thb: Math.round(a * r.rate * 100)/100}); }
+    });
+    return out;
+  }
+
+  function bangkokHour(){
+    try{
+      var p = new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Bangkok",hour:"numeric",minute:"numeric",hour12:false}).formatToParts(new Date());
+      var h=0,m=0;
+      p.forEach(function(x){ if(x.type==="hour")h=+x.value; if(x.type==="minute")m=+x.value; });
+      return h + m/60;
+    }catch(e){ return 12; }
+  }
+
+  function fmt(n){ return Math.round(n).toLocaleString("en-US"); }
+  function bangkokStamp(){
+    try{
+      return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Bangkok",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
+    }catch(e){ return new Date().toISOString(); }
+  }
+
+  function update(){
+    var lines = getLines();
+    var total = lines.reduce(function(s,l){ return s + l.thb; }, 0);
+
+    var rl = document.getElementById("rateLine");
+    if(lines.length === 0){
+      rl.textContent = "Rate today: pick your notes above";
+    } else {
+      rl.innerHTML = lines.map(function(l){
+        return l.amt.toLocaleString("en-US") + " " + l.r.label.replace(/^[^A-Za-z$€£]*/,"") +
+               " × " + l.r.rate.toFixed(2) + " = " + fmt(l.thb) + " THB";
+      }).join("<br>");
+    }
+    var out = document.getElementById("thbOut");
+    out.innerHTML = total > 0 ? "You receive: " + fmt(total) + " <small>THB</small>" : "You receive: —";
+
+    var units = lines.reduce(function(s,l){ return s + l.amt; }, 0);   // foreign-currency amount ordered
+    var under = units > 0 && units < MIN_FX;
+    var over  = units > MAX_FX;
+    document.getElementById("minWarn").style.display = under ? "block" : "none";
+    document.getElementById("maxWarn").style.display = over  ? "block" : "none";
+
+    var filled = ids.every(function(id){ return document.getElementById(id).value.trim().length > (id === "room" ? 0 : 1); });
+    var ok = total > 0 && !under && !over && filled;
+
+    var h = bangkokHour();
+    var closed = (h < 10 || h >= 16.5);
+    var note = document.getElementById("closedNote");
+    if(closed){
+      note.style.display = "block";
+      note.textContent = "We're outside delivery hours right now (last order 16:30). You can still send your order — we'll confirm it next morning at that day's rate before delivering.";
+    } else { note.style.display = "none"; }
+
+    var btn = document.getElementById("waBtn");
+    btn.setAttribute("aria-disabled", ok ? "false" : "true");
+    btn.href = ok ? waLink(lines, total) : "#";
+
+    var copyBtn = document.getElementById("copyBtn");
+    copyBtn.setAttribute("aria-disabled", ok ? "false" : "true");
+    window._orderText = ok ? orderText(lines, total) : "";
+  }
+
+  function buildMsg(lines, total){
+    var g = function(id){ return document.getElementById(id).value.trim(); };
+    var msg = ["NEW CASH DELIVERY ORDER"];
+    lines.forEach(function(l){
+      msg.push("- " + l.r.label + ": " + l.amt.toLocaleString("en-US") +
+               " @ " + l.r.rate.toFixed(2) + " = " + fmt(l.thb) + " THB");
+    });
+    msg.push("TOTAL I receive: " + fmt(total) + " THB");
+    msg.push("Rate taken: " + bangkokStamp() + (window._liveRates ? " (live)" : " (saved)"));
+    msg.push("Name: " + g("fname"));
+    msg.push("Hotel: " + g("hotel"));
+    msg.push("Room: " + g("room"));
+    msg.push("Passport: " + g("pass"));
+    var ref = g("refcode");
+    if(ref){ msg.push("Hotel code: " + ref.toUpperCase()); }
+    msg.push("I will wait at the hotel LOBBY with this passport.");
+    return msg.join("\n");
+  }
+
+  function orderText(lines, total){ return buildMsg(lines, total); }
+  function waLink(lines, total){ return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(buildMsg(lines, total)); }
+
+  document.getElementById("copyBtn").addEventListener("click", function(){
+    if(this.getAttribute("aria-disabled") === "true") return;
+    var txt = window._orderText || "";
+    var msgEl = document.getElementById("copyMsg");
+    function show(m){ msgEl.textContent = m; msgEl.style.display = "block"; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){
+        show("✅ Copied! Paste it into LINE, SMS or email to 088-987-7070 and send.");
+      }).catch(function(){ show("Select the text below and copy it:\n\n" + txt); });
+    } else {
+      show("Copy this and send it to us:\n\n" + txt);
+    }
+  });
+
+  document.getElementById("waBtn").addEventListener("click", function(e){
+    if(this.getAttribute("aria-disabled") === "true"){ e.preventDefault(); }
+  });
+
+  update();
+
+  // --- LIVE RATES: read today's "Buying ลูกค้า" column straight from the office Google Sheet.
+  // If the sheet cannot be reached, the saved RATES above stay in use (nothing breaks).
+  var SHEET_ID  = "1dSCN5ba-t6D-HBYTtBwbnOVBBeGwch8oF3lKkzG-sCU";
+  var SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:csv&headers=0&sheet=Rate_Table&range=A1:D13";
+  var SHEET_MAP = {"USD 100":"USD", "USD 20":"USDS", "GBP":"GBP", "EUR":"EUR", "CHF":"CHF", "AUD":"AUD", "CAD":"CAD"};
+
+  function parseCSV(text){
+    var rows = [], row = [], cell = "", q = false;
+    for(var i = 0; i < text.length; i++){
+      var ch = text[i];
+      if(q){
+        if(ch === '"'){ if(text[i+1] === '"'){ cell += '"'; i++; } else { q = false; } }
+        else { cell += ch; }
+      } else {
+        if(ch === '"'){ q = true; }
+        else if(ch === ','){ row.push(cell); cell = ""; }
+        else if(ch === '\n'){ row.push(cell); rows.push(row); row = []; cell = ""; }
+        else if(ch !== '\r'){ cell += ch; }
+      }
+    }
+    if(cell.length || row.length){ row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function applyLiveRates(text){
+    var rows = parseCSV(text), found = {}, dateText = (rows[0] && rows[0][0]) ? String(rows[0][0]).trim() : "";
+    rows.forEach(function(r){
+      var name = String(r[0] || "").trim();
+      var v = parseFloat(String(r[3] || "").replace(/,/g, ""));
+      if(SHEET_MAP[name] && isFinite(v) && v > 5 && v < 80){ found[SHEET_MAP[name]] = Math.round(v * 100) / 100; }
+    });
+    var complete = RATES.every(function(r){ return typeof found[r.code] === "number"; });
+    if(!complete) return false;                       // never apply a half-read sheet
+    var changed = false;
+    RATES.forEach(function(r){ if(r.rate !== found[r.code]){ r.rate = found[r.code]; changed = true; } });
+    Array.prototype.forEach.call(document.querySelectorAll("#rows select"), function(sel){
+      Array.prototype.forEach.call(sel.options, function(o, i){ o.textContent = RATES[i].label + " — " + RATES[i].rate.toFixed(2); });
+    });
+    window._liveRates = true;
+    var src = document.getElementById("rateSrc");
+    src.textContent = "✓ Live rate from our counter" + (dateText ? " · " + dateText : "");
+    src.style.display = "block";
+    if(changed) update();
+    return true;
+  }
+
+  function loadLiveRates(){
+    try{
+      fetch(SHEET_URL, {cache:"no-store"})
+        .then(function(r){ if(!r.ok) throw new Error("http " + r.status); return r.text(); })
+        .then(function(t){ if(/^\s*</.test(t)) throw new Error("not csv"); applyLiveRates(t); })
+        .catch(function(){ /* keep saved rates */ });
+    }catch(e){}
+  }
+  loadLiveRates();
+  setInterval(loadLiveRates, 10 * 60 * 1000);                                   // refresh every 10 minutes while open
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) loadLiveRates(); });
+</script>
+
+</body></html>
