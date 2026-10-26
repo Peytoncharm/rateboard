@@ -117,7 +117,7 @@
     <input id="room" placeholder="214">
     <label for="pass">Passport number</label>
     <input id="pass" placeholder="C01X00T47">
-    <label for="phone">Your phone / WhatsApp number <span style="font-weight:400; text-transform:none; letter-spacing:0">(optional, so we can reach you)</span></label>
+    <label for="phone">Your WhatsApp number <span style="font-weight:400; text-transform:none; letter-spacing:0">(with country code — we confirm your order there)</span></label>
     <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+49 170 1234567">
     <input type="hidden" id="refcode">
     <p class="fine">Bring this passport to the lobby — we check it before handing over cash. Thai law requires ID for currency exchange.</p>
@@ -170,7 +170,7 @@
     </ul>
   </section>
 
-  <footer>Peyton &amp; Charmed · Koh Chang · licensed currency exchange · rates updated every morning<br>page version 53 · 26 Oct</footer>
+  <footer>Peyton &amp; Charmed · Koh Chang · licensed currency exchange · rates updated every morning<br>page version 54 · 26 Oct</footer>
 </div>
 
 <script>
@@ -229,8 +229,8 @@
   makeRow();
   document.getElementById("addRow").addEventListener("click", function(){ makeRow(); });
 
-  var ids = ["fname","hotel","room","pass"];
-  ids.concat(["refcode","phone"]).forEach(function(id){
+  var ids = ["fname","hotel","room","pass","phone"];
+  ids.concat(["refcode"]).forEach(function(id){
     document.getElementById(id).addEventListener("input", update);
   });
 
@@ -315,7 +315,7 @@
     msg.push("Hotel: " + g("hotel"));
     msg.push("Room: " + g("room"));
     msg.push("Passport: " + g("pass"));
-    if(g("phone")){ msg.push("Phone: " + g("phone")); }
+    msg.push("WhatsApp: " + g("phone"));
     var ref = g("refcode");
     if(ref){ msg.push("Hotel code: " + ref.toUpperCase()); }
     msg.push("Order no: " + orderId());
