@@ -93,6 +93,19 @@
     50% { background: #c0392b; color: #ffffff; transform: scale(1.08); }
   }
   .header .pill { animation: kcFlash 1.6s ease-in-out infinite; }
+
+  /* Advertising-only screen (27 Oct 2026) */
+  .hidden-rates { display: none; }
+  .ad { flex: 1; min-height: 0; background: #0a1628; color: #fff; text-align: center; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: calc(var(--v) * 1.8); padding: 0 calc(var(--u) * 5); }
+  .ad-flags img { width: min(calc(var(--u) * 15), calc(var(--v) * 8.2)); height: min(calc(var(--u) * 15), calc(var(--v) * 8.2));
+    border-radius: 50%; object-fit: cover; border: calc(var(--u) * 0.6) solid #f5c842; margin: calc(var(--v) * 0.5) calc(var(--u) * 1.5); }
+  .ad-big { font-family: 'Arial Black', 'Arial', sans-serif; font-weight: 900; color: #f5c842; line-height: 1.05;
+    font-size: min(calc(var(--u) * 11.5), calc(var(--v) * 6.4)); }
+  .ad-mid { font-family: 'Arial Black', 'Arial', sans-serif; font-weight: 900; line-height: 1.3; font-size: min(calc(var(--u) * 4.6), calc(var(--v) * 2.6)); }
+  .ad-cta { background: #22a35a; border-radius: 999px; font-weight: 900; white-space: nowrap; padding: calc(var(--v) * 0.9) calc(var(--u) * 5);
+    font-size: min(calc(var(--u) * 5), calc(var(--v) * 2.8)); }
+  .ad-small { font-weight: 700; color: #d9e2ec; font-size: min(calc(var(--u) * 3.8), calc(var(--v) * 2.1)); }
 </style>
 </head>
 <body>
@@ -102,14 +115,20 @@
     <h1 class="big">MONEY EXCHANGE</h1>
     <div class="what">WE BUY DOLLARS &middot; EUROS &middot; POUNDS</div>
     <div class="what white">CASH TO THAI BAHT, ON THE SPOT</div>
-    <div class="pill">TODAY&rsquo;S RATES &darr; COME CLOSER</div>
+    <div class="pill">ASK US FOR TODAY&rsquo;S RATE</div>
     <div class="date" id="dateDisplay">--</div>
   </div>
-  <div class="table-header"><span>CURRENCY</span><span>WE BUY (THB)</span></div>
-  <div class="rate-rows" id="rateRows"></div>
-  <div class="notice" id="notice"></div>
+  <!-- Advertising only (27 Oct 2026): no rates on the screen; the rate sheet is on the counter. -->
+  <div class="hidden-rates"><div id="rateRows"></div><div id="notice"></div></div>
+  <div class="ad">
+    <div class="ad-flags"><img data-flag="us" alt=""><img data-flag="eu" alt=""><img data-flag="gb" alt=""><br><img data-flag="ch" alt=""><img data-flag="au" alt=""><img data-flag="ca" alt=""></div>
+    <div class="ad-big">CHANGE YOUR<br>CASH HERE</div>
+    <div class="ad-mid">US DOLLARS &middot; EUROS &middot; POUNDS<br>SWISS FRANCS &middot; AUD &middot; CAD</div>
+    <div class="ad-cta">TODAY&rsquo;S RATE AT OUR COUNTER</div>
+    <div class="ad-small">We also deliver cash to your hotel</div>
+  </div>
   <div class="terms">USD $20 &middot; $10 &middot; $5 &middot; $1 notes: lower rate &mdash; ask our staff.<br>Passport required. Damaged banknotes and banknotes with pen marks are not accepted.</div>
-  <div class="footer"><span class="live-dot" id="liveDot"></span>Rates of <span id="rateDate">--</span> · checked <span id="lastUpdate">--</span></div>
+  <div class="footer" style="display:none"><span class="live-dot" id="liveDot"></span>Rates of <span id="rateDate">--</span> · checked <span id="lastUpdate">--</span></div>
 </div>
 
 <script>
@@ -215,6 +234,11 @@ function shownRate(v, code, desc) {
   return Math.floor((v - cut) * 10000) / 10000;
 }
 
+function fillAdFlags() {
+  var imgs = document.querySelectorAll('.ad-flags img');
+  for (var i = 0; i < imgs.length; i++) imgs[i].src = flagUrl(imgs[i].getAttribute('data-flag'));
+}
+
 function render(rates) {
   var h = '';
   LINES.forEach(function (line) {
@@ -276,6 +300,7 @@ try {
 
 render(null);
 updateClock();
+fillAdFlags();
 load();
 setInterval(load, REFRESH_MS);
 setInterval(updateClock, 30 * 1000);
