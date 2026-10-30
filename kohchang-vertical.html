@@ -65,7 +65,7 @@ addEventListener('resize',fit);fit();
       o.connect(g); g.connect(duckGain); o.start(t); o.stop(t + dur + 0.05);
     }
     function scheduleBar(t, ch) {
-      pluck(t, ch[0] - 24, 0.22, 2.0);                       // soft bass note
+      pluck(t, ch[0] - 24, 0.3, 2.0);                       // soft bass note
       var seq = [0, 2, 1, 2, 0, 2, 1, 2];
       for (var i = 0; i < 8; i++) pluck(t + i * 0.325, ch[seq[i]] + 12, 0.11, 0.7);
       if (barIdx % 4 === 3) pluck(t + 7 * 0.325, ch[2] + 24, 0.07, 0.9);
@@ -79,7 +79,7 @@ addEventListener('resize',fit);fit();
       start: function () {
         if (!ctx) {
           ctx = new (window.AudioContext || window.webkitAudioContext)();
-          master = ctx.createGain(); master.gain.value = 0.26;
+          master = ctx.createGain(); master.gain.value = 0.6;
           duckGain = ctx.createGain(); duckGain.gain.value = 1;
           duckGain.connect(master); master.connect(ctx.destination);
         }
