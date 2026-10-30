@@ -35,7 +35,7 @@ addEventListener('resize',fit);fit();
 </script>
 <div id="sndBtn" style="position:fixed;right:10px;bottom:10px;z-index:99;font:700 14px Arial;background:rgba(10,22,40,.75);color:#f5c842;border-radius:999px;padding:6px 12px;cursor:pointer">&#128263; sound: off</div>
 <script>
-// Spoken advert (30 Oct 2026): every few minutes the page says "money exchange, come in"
+// Spoken advert (30 Oct 2026): the page keeps repeating "money exchange, come in"
 // in English, Russian and French, using the voices built into Chrome on the laptop.
 // Click once anywhere (or the little button) to switch sound on; add ?quiet to hide it.
 (function () {
@@ -44,9 +44,9 @@ addEventListener('resize',fit);fit();
     { lang: 'ru', text: 'Обмен валют, выгодный курс, заходите!' },
     { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
-  var EVERY_MS = 3 * 60 * 1000;   // every 3 minutes
+  var GAP_MS = 12 * 1000;   // breath between rounds; it keeps repeating all day
   var q = (location.search || '').toLowerCase();
-  var m = q.match(/say=(\d+)/); if (m) EVERY_MS = Math.max(30, parseInt(m[1], 10)) * 1000;
+  var m = q.match(/say=(\d+)/); if (m) GAP_MS = Math.max(5, parseInt(m[1], 10)) * 1000;
   var on = false, timer = null, btn = document.getElementById('sndBtn');
   if (!('speechSynthesis' in window) || q.indexOf('quiet') >= 0) { btn.style.display = 'none'; return; }
 
@@ -70,17 +70,22 @@ addEventListener('resize',fit);fit();
   function announce() {
     if (!on) return;
     speechSynthesis.cancel();
+    var spoken = 0, last = null;
     LINES.forEach(function (l) {
       var v = voiceFor(l.lang); if (!v) return;   // a language with no voice installed is skipped
       var u = new SpeechSynthesisUtterance(l.text);
-      u.voice = v; u.lang = v.lang; u.rate = 1.08; u.volume = 1;
-      speechSynthesis.speak(u);
+      u.voice = v; u.lang = v.lang; u.rate = 1.0; u.pitch = 1.05; u.volume = 1;
+      speechSynthesis.speak(u); spoken++; last = u;
     });
+    if (timer) clearTimeout(timer);
+    if (spoken === 0) { timer = setTimeout(announce, 20000); return; }
+    last.onend = function () { if (on) timer = setTimeout(announce, GAP_MS); };
+    timer = setTimeout(announce, 90000);   // safety net if onend never fires
   }
   function setOn(v) {
     on = v; btn.innerHTML = on ? '&#128266; sound: on' : '&#128263; sound: off';
-    if (timer) { clearInterval(timer); timer = null; }
-    if (on) { announce(); timer = setInterval(announce, EVERY_MS); } else { speechSynthesis.cancel(); }
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (on) { announce(); } else { speechSynthesis.cancel(); }
   }
   btn.addEventListener('click', function (e) { e.stopPropagation(); setOn(!on); });
   document.addEventListener('click', function once() { if (!on) setOn(true); document.removeEventListener('click', once); });
