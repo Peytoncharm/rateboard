@@ -44,7 +44,7 @@ addEventListener('resize',fit);fit();
     { lang: 'de', text: 'Geldwechsel, gute Kurse, kommen Sie herein!' },
     { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
-  var GAP_MS = 60 * 1000;   // 1 minute pause between rounds; it keeps repeating all day
+  var GAP_MS = 2 * 1000;   // almost no pause; it repeats back-to-back all day
   var q = (location.search || '').toLowerCase();
   var m = q.match(/say=(\d+)/); if (m) GAP_MS = Math.max(5, parseInt(m[1], 10)) * 1000;
   var on = false, timer = null, btn = document.getElementById('sndBtn');
