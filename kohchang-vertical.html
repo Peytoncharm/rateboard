@@ -36,12 +36,12 @@ addEventListener('resize',fit);fit();
 <div id="sndBtn" style="position:fixed;right:10px;bottom:10px;z-index:99;font:700 14px Arial;background:rgba(10,22,40,.75);color:#f5c842;border-radius:999px;padding:6px 12px;cursor:pointer">&#128263; sound: off</div>
 <script>
 // Spoken advert (30 Oct 2026): the page keeps repeating "money exchange, come in"
-// in English, Russian and French, using the voices built into Chrome on the laptop.
+// in Russian, German and French, using the voices built into Chrome on the laptop.
 // Click once anywhere (or the little button) to switch sound on; add ?quiet to hide it.
 (function () {
   var LINES = [
-    { lang: 'en', text: 'Money exchange, great rates, come on in!' },
     { lang: 'ru', text: 'Обмен валют, выгодный курс, заходите!' },
+    { lang: 'de', text: 'Geldwechsel, gute Kurse, kommen Sie herein!' },
     { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
   var GAP_MS = 60 * 1000;   // 1 minute pause between rounds; it keeps repeating all day
@@ -62,7 +62,7 @@ addEventListener('resize',fit);fit();
       else if (v.name.indexOf('Natural') >= 0) sc = 4;
       else if (!v.localService) sc = 2;
       // prefer a female voice
-      if (/jenny|aria|michelle|emma|ana|zira|svetlana|irina|dariya|denise|eloise|vivienne|hortense|julie|female/i.test(v.name)) sc += 1;
+      if (/jenny|aria|michelle|emma|ana|zira|svetlana|irina|dariya|katja|amala|elke|hedda|denise|eloise|vivienne|hortense|julie|female/i.test(v.name)) sc += 1;
       if (sc > score) { score = sc; pick = v; }
     }
     return pick;
