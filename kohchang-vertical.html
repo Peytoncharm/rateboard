@@ -36,13 +36,12 @@ addEventListener('resize',fit);fit();
 <div id="sndBtn" style="position:fixed;right:10px;bottom:10px;z-index:99;font:700 14px Arial;background:rgba(10,22,40,.75);color:#f5c842;border-radius:999px;padding:6px 12px;cursor:pointer">&#128263; sound: off</div>
 <script>
 // Spoken advert (30 Oct 2026): every few minutes the page says "money exchange, come in"
-// in English, Russian, German and French, using the voices built into Chrome on the laptop.
+// in English, Russian and French, using the voices built into Chrome on the laptop.
 // Click once anywhere (or the little button) to switch sound on; add ?quiet to hide it.
 (function () {
   var LINES = [
     { lang: 'en', text: 'Money exchange! Great rates. Come in!' },
     { lang: 'ru', text: 'Обмен валют! Выгодный курс. Заходите!' },
-    { lang: 'de', text: 'Geldwechsel! Gute Kurse. Kommen Sie herein!' },
     { lang: 'fr', text: 'Bureau de change ! Bons taux. Entrez !' }
   ];
   var EVERY_MS = 3 * 60 * 1000;   // every 3 minutes
@@ -52,11 +51,19 @@ addEventListener('resize',fit);fit();
   if (!('speechSynthesis' in window) || q.indexOf('quiet') >= 0) { btn.style.display = 'none'; return; }
 
   function voiceFor(lang) {
-    var vs = speechSynthesis.getVoices(), best = null;
+    // Prefer the most human-sounding voices: Google's online voices first,
+    // then Microsoft "Natural" voices, then any online voice, then whatever is installed.
+    var vs = speechSynthesis.getVoices(), pick = null, score = -1;
     for (var i = 0; i < vs.length; i++) {
-      if (vs[i].lang && vs[i].lang.toLowerCase().indexOf(lang) === 0) { best = vs[i]; if (vs[i].localService) break; }
+      var v = vs[i];
+      if (!v.lang || v.lang.toLowerCase().indexOf(lang) !== 0) continue;
+      var sc = 0;
+      if (v.name.indexOf('Google') === 0) sc = 3;
+      else if (v.name.indexOf('Natural') >= 0) sc = 2;
+      else if (!v.localService) sc = 1;
+      if (sc > score) { score = sc; pick = v; }
     }
-    return best;
+    return pick;
   }
   function announce() {
     if (!on) return;
