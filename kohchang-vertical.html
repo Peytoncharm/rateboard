@@ -44,7 +44,7 @@ addEventListener('resize',fit);fit();
     { lang: 'de', text: 'Geldwechsel, gute Kurse, kommen Sie herein!' },
     { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
-  var GAP_MS = 2 * 1000;   // almost no pause; it repeats back-to-back all day
+  var GAP_MS = 25 * 1000;   // a short music-only moment between rounds; repeats all day
   var q = (location.search || '').toLowerCase();
   var m = q.match(/say=(\d+)/); if (m) GAP_MS = Math.max(5, parseInt(m[1], 10)) * 1000;
   var on = false, timer = null, btn = document.getElementById('sndBtn');
@@ -79,7 +79,7 @@ addEventListener('resize',fit);fit();
       start: function () {
         if (!ctx) {
           ctx = new (window.AudioContext || window.webkitAudioContext)();
-          master = ctx.createGain(); master.gain.value = 0.16;
+          master = ctx.createGain(); master.gain.value = 0.26;
           duckGain = ctx.createGain(); duckGain.gain.value = 1;
           duckGain.connect(master); master.connect(ctx.destination);
         }
@@ -88,7 +88,7 @@ addEventListener('resize',fit);fit();
         running = true; barIdx = 0; nextBar = ctx.currentTime + 0.1; loop();
       },
       stop: function () { running = false; if (schedTimer) clearTimeout(schedTimer); if (ctx && ctx.state === 'running') ctx.suspend(); },
-      duck: function (d) { if (!ctx) return; var g = duckGain.gain; g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(d ? 0.15 : 1, ctx.currentTime, 0.25); }
+      duck: function (d) { if (!ctx) return; var g = duckGain.gain; g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(d ? 0.45 : 1, ctx.currentTime, 0.25); }
     };
   })();
 
