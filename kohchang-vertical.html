@@ -40,9 +40,9 @@ addEventListener('resize',fit);fit();
 // Click once anywhere (or the little button) to switch sound on; add ?quiet to hide it.
 (function () {
   var LINES = [
-    { lang: 'en', text: 'Money exchange! Great rates. Come in!' },
-    { lang: 'ru', text: 'Обмен валют! Выгодный курс. Заходите!' },
-    { lang: 'fr', text: 'Bureau de change ! Bons taux. Entrez !' }
+    { lang: 'en', text: 'Money exchange, great rates, come on in!' },
+    { lang: 'ru', text: 'Обмен валют, выгодный курс, заходите!' },
+    { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
   var EVERY_MS = 3 * 60 * 1000;   // every 3 minutes
   var q = (location.search || '').toLowerCase();
@@ -71,7 +71,7 @@ addEventListener('resize',fit);fit();
     LINES.forEach(function (l) {
       var v = voiceFor(l.lang); if (!v) return;   // a language with no voice installed is skipped
       var u = new SpeechSynthesisUtterance(l.text);
-      u.voice = v; u.lang = v.lang; u.rate = 0.95; u.volume = 1;
+      u.voice = v; u.lang = v.lang; u.rate = 1.08; u.volume = 1;
       speechSynthesis.speak(u);
     });
   }
