@@ -44,7 +44,7 @@ addEventListener('resize',fit);fit();
     { lang: 'ru', text: 'Обмен валют, выгодный курс, заходите!' },
     { lang: 'fr', text: 'Bureau de change, bons taux, entrez !' }
   ];
-  var GAP_MS = 12 * 1000;   // breath between rounds; it keeps repeating all day
+  var GAP_MS = 60 * 1000;   // 1 minute pause between rounds; it keeps repeating all day
   var q = (location.search || '').toLowerCase();
   var m = q.match(/say=(\d+)/); if (m) GAP_MS = Math.max(5, parseInt(m[1], 10)) * 1000;
   var on = false, timer = null, btn = document.getElementById('sndBtn');
@@ -80,7 +80,7 @@ addEventListener('resize',fit);fit();
     if (timer) clearTimeout(timer);
     if (spoken === 0) { timer = setTimeout(announce, 20000); return; }
     last.onend = function () { if (on) timer = setTimeout(announce, GAP_MS); };
-    timer = setTimeout(announce, 90000);   // safety net if onend never fires
+    timer = setTimeout(announce, 150000);   // safety net if onend never fires
   }
   function setOn(v) {
     on = v; btn.innerHTML = on ? '&#128266; sound: on' : '&#128263; sound: off';
