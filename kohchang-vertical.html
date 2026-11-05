@@ -61,7 +61,8 @@ addEventListener('resize',fit);fit();
     var v=vids[cur];
     if(v.ended){ next(); still=0; return; }
     if(v.paused&&v.readyState>=2) play(v);
-    if(Math.abs(v.currentTime-lastT)<0.01){ if(++still>=4){ still=0; next(); } } else still=0;
+    // count only when the clip has loaded and should be moving, so slow Wi-Fi is never mistaken for a freeze
+    if(!v.paused&&v.readyState>=3&&Math.abs(v.currentTime-lastT)<0.01){ if(++still>=8){ still=0; next(); } } else still=0;
     lastT=v.currentTime;
   },2000);
   // Reload the page once a day at 6am so changes reach the screen without anyone touching it.
