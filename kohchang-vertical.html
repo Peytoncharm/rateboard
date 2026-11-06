@@ -19,7 +19,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;cursor:none}
   <video id="vA" muted playsinline preload="auto"></video>
   <video id="vB" muted playsinline preload="auto"></video>
   <img class="logo" src="kohchang-video/logo.png" alt="Peyton &amp; Charmed Group">
-  <div id="startHint" hidden style="position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(10,22,40,.85);color:#f5c842;font:800 64px Arial,sans-serif;padding:40px 60px;border-radius:30px;text-align:center;white-space:nowrap">Click once to start</div>
   <div class="caption"><b>Welcome to Koh Chang</b><span>Money Exchange &middot; Tours &middot; Transfers</span></div>
 </div>
 <script>
@@ -43,9 +42,13 @@ addEventListener('resize',fit);fit();
   var END=3, stage=document.getElementById('stage');
   var vids=[document.getElementById('vA'),document.getElementById('vB')], cur=0, idx=0;
   function load(v,i){ v.src=clips[i]; v.load(); }
-  var hint=document.getElementById('startHint');
-  function play(v){ var p=v.play(); if(p&&p.then) p.then(function(){ hint.hidden=true; }).catch(function(){ hint.hidden=false; }); }
-  // If the browser blocks videos from starting by themselves, one click or key press starts the show.
+  // Videos are silent (muted), which browsers let start by themselves. If a start is ever
+  // interrupted, quietly try again a moment later, so the show keeps rolling with no message.
+  function play(v){
+    v.muted=true; v.defaultMuted=true;
+    var p=v.play();
+    if(p&&p.catch) p.catch(function(){ setTimeout(function(){ if(v===vids[cur]&&v.paused) play(v); },1500); });
+  }
   function kick(){ play(vids[cur]); }
   document.addEventListener('click',kick); document.addEventListener('keydown',kick); document.addEventListener('touchstart',kick);
   load(vids[0],0); vids[0].classList.add('on'); play(vids[0]); load(vids[1],1);
