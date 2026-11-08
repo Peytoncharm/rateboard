@@ -41,11 +41,8 @@ function parseCSV(t){var rows=[],row=[],c='',q=false;for(var i=0;i<t.length;i++)
  else{if(ch=='"')q=true;else if(ch==','){row.push(c);c='';}else if(ch=='\n'){row.push(c);rows.push(row);row=[];c='';}else if(ch!='\r')c+=ch;}}
  if(c.length||row.length){row.push(c);rows.push(row);}return rows;}
 function shown(pos,code,desc,dateText){
- if(Math.round(pos*100)%100===0)return pos.toFixed(4);
- var key=dateText+code+desc,n=0;
- for(var i=0;i<key.length;i++)n=(n*31+key.charCodeAt(i))%1000003;
- var cut=(11+n%79)/10000;
- return (Math.floor((pos-cut)*10000+1e-9)/10000).toFixed(4);
+ // POS pays this rounded to the nearest satang; print one hundredth of a satang under it.
+ return (pos-0.0001).toFixed(4);
 }
 function fail(){document.getElementById('warn').style.display='block';}
 fetch(URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){

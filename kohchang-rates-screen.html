@@ -71,8 +71,10 @@ function parseCSV(t){var rows=[],row=[],c='',q=false;for(var i=0;i<t.length;i++)
 // Safety rule: the screen must never promise more than the till actually pays.
 // The POS price is the sheet rate rounded to 2 decimals, so show whichever is lower.
 function shown(v){
+  // The till pays the sheet rate rounded to the nearest satang, so the highest honest
+  // number to show is one hundredth of a satang under that (POS 31.01 -> 31.0099).
   var pos = Math.round(v*100)/100;
-  return (v <= pos ? v : pos).toFixed(4);
+  return (pos - 0.0001).toFixed(4);
 }
 function hold(){ document.getElementById('hold').style.display = 'flex'; }
 function show(){ document.getElementById('hold').style.display = 'none'; }
