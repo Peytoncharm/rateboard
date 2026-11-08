@@ -72,11 +72,13 @@ function parseCSV(t){var rows=[],row=[],c='',q=false;for(var i=0;i<t.length;i++)
 
 // Safety rule: the screen must never promise more than the till actually pays.
 // The POS price is the sheet rate rounded to 2 decimals, so show whichever is lower.
-function shown(v){
-  // The till pays the sheet rate rounded to the nearest satang, so the highest honest
-  // number to show is one hundredth of a satang under that (POS 31.01 -> 31.0099).
+var OFFSET = {'USD 100':1,'USD 20':6,'EUR':2,'GBP':8,'CHF':4,'AUD':3,'CAD':7};
+function shown(v, key){
+  // The till pays the sheet rate rounded to the nearest satang. Show a little under that,
+  // by a small amount that differs per currency so the endings look natural
+  // (POS 31.01 -> 31.0099, POS 42.03 -> 42.0292). Never above what the till pays.
   var pos = Math.round(v*100)/100;
-  return (pos - 0.0001).toFixed(4);
+  return (pos - (OFFSET[key] || 5)/10000).toFixed(4);
 }
 function hold(){ document.getElementById('hold').style.display = 'flex'; }
 function show(){ document.getElementById('hold').style.display = 'none'; }
@@ -92,7 +94,7 @@ function load(){
     var filled = 0;
     KEYS.forEach(function(k){
       var el = document.querySelector('.row[data-key="' + k + '"]');
-      if (el && typeof vals[k] === 'number') { el.querySelector('.rt').textContent = shown(vals[k]); filled++; }
+      if (el && typeof vals[k] === 'number') { el.querySelector('.rt').textContent = shown(vals[k], k); filled++; }
     });
     var d = new Date(dateText), today = new Date();
     var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
