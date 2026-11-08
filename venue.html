@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Peyton &amp; Charmed Money Exchange — Referral Pass</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#07271D;color:#F6F1E6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       min-height:100vh;padding:18px 16px 34px;
+       background-image:radial-gradient(ellipse 70% 40% at 15% 0%,rgba(121,201,158,.16),transparent 60%),
+                        linear-gradient(180deg,#0B3A2B 0%,#07271D 55%,#05201A 100%);
+       background-attachment:fixed}
+  .wrap{max-width:430px;margin:0 auto}
+  .mk{text-align:center;font-weight:800;font-size:12px;letter-spacing:.22em;color:#E4B24C}
+  .mk small{display:block;font-weight:600;font-size:9px;letter-spacing:.18em;color:#9bc0a1;margin-top:4px}
+
+  .card{margin-top:18px;border:2px solid #E4B24C;border-radius:16px;background:rgba(228,178,76,.10);padding:20px 16px;text-align:center}
+  .card .k{font-weight:700;font-size:10.5px;letter-spacing:.24em;color:#9bc0a1}
+  .card .v{font-weight:800;font-size:27px;line-height:1.2;color:#fff;margin-top:9px}
+  .card .th{font-size:14px;color:#cfe0d4;margin-top:5px}
+
+  .bad{border-color:#E26A5A;background:rgba(226,106,90,.12)}
+  .bad .v{color:#FFD9D3;font-size:22px}
+
+  .pass{margin-top:14px;display:flex;gap:10px}
+  .pass > div{flex:1;border:1px solid rgba(121,201,158,.45);border-radius:12px;padding:11px 8px;text-align:center}
+  .pass .k{font-weight:700;font-size:9px;letter-spacing:.2em;color:#79C99E}
+  .pass .v{font-weight:800;font-size:17px;color:#fff;margin-top:5px;letter-spacing:.02em}
+  .pass .s{font-size:10px;color:#9bc0a1;margin-top:3px}
+
+  h1{font-size:19px;font-weight:800;margin-top:22px;text-align:center;line-height:1.35}
+  .sub{text-align:center;font-size:13.5px;color:#cfe0d4;margin-top:8px;line-height:1.5}
+
+  .note{margin-top:16px;border-left:3px solid #E4B24C;padding:2px 0 2px 12px;font-size:12.5px;color:#cfe0d4;line-height:1.55}
+  .note b{color:#fff}
+
+  .counters{margin-top:20px;border-top:1px solid rgba(228,178,76,.35);padding-top:14px}
+  .counters .h{font-weight:700;font-size:10px;letter-spacing:.24em;color:#E4B24C;text-align:center}
+  .counters .c{margin-top:12px;border:1px solid rgba(121,201,158,.35);border-radius:12px;padding:11px 13px}
+  .counters .c + .c{margin-top:9px}
+  .counters .n{font-weight:800;font-size:14.5px;color:#fff}
+  .counters .d{font-size:12px;color:#9bc0a1;margin-top:3px;line-height:1.45}
+
+  .foot{margin-top:20px;text-align:center;font-size:11px;color:#9bc0a1;line-height:1.6}
+  .foot b{color:#E4B24C}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mk">PEYTON &amp; CHARMED<small>MONEY EXCHANGE &middot; KOH CHANG</small></div>
+
+  <div class="card" id="card">
+    <div class="k">SENT BY</div>
+    <div class="v" id="vname">—</div>
+    <div class="th" id="vth"></div>
+  </div>
+
+  <div class="pass" id="passrow">
+    <div><div class="k">PASS</div><div class="v" id="passno">—</div></div>
+    <div><div class="k">SCANNED</div><div class="v" id="scandate">—</div><div class="s" id="scantime"></div></div>
+  </div>
+
+  <h1 id="headline">Welcome! Please show this screen at our counter.</h1>
+  <div class="sub">ยินดีต้อนรับ — กรุณาแสดงหน้าจอนี้ที่เคาน์เตอร์ของเรา</div>
+
+  <div class="note">
+    <b>One screen = one visit.</b> Keep this page open, or take a screenshot before you leave.
+    We buy USD, EUR, GBP and more — no commission.
+  </div>
+
+  <div class="counters">
+    <div class="h">OUR COUNTERS</div>
+    <div class="c">
+      <div class="n">Koh Chang &middot; Kai Bae</div>
+      <div class="d">Peyton &amp; Charmed Money Exchange, in Montra Spa<br>Open daily 10:00 – 17:00</div>
+    </div>
+    <div class="c">
+      <div class="n">U-Tapao International Airport (UTP)</div>
+      <div class="d">Arrivals hall &middot; our counter</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Peyton &amp; Charmed Group &middot; since 2021<br>
+    WhatsApp <b>+66 88 987 7070</b>
+  </div>
+</div>
+
+<script>
+(function () {
+  var VENUES = {
+    morgan: { en: "Morgan Restaurant &amp; Bar", th: "มอร์แกน เรสเตอรองท์ แอนด์ บาร์", prefix: "MOR" }
+  };
+
+  function qs(name) {
+    var m = new RegExp("[?&]" + name + "=([^&#]*)").exec(window.location.search);
+    return m ? decodeURIComponent(m[1]).toLowerCase().trim() : "";
+  }
+
+  var key = qs("v");
+  var v = VENUES[key];
+
+  if (!v) {
+    var card = document.getElementById("card");
+    card.className = "card bad";
+    card.querySelector(".k").textContent = "NO VENUE";
+    document.getElementById("vname").textContent = "This pass is not valid";
+    document.getElementById("headline").textContent = "Please scan the QR code at the restaurant or bar.";
+    document.getElementById("passrow").style.display = "none";
+    return;
+  }
+
+  document.getElementById("vname").innerHTML = v.en;
+  document.getElementById("vth").textContent = v.th;
+
+  var now = new Date(Date.now() + 7 * 3600 * 1000);
+  var p = function (n) { return (n < 10 ? "0" : "") + n; };
+  var d = p(now.getUTCDate()), mo = p(now.getUTCMonth() + 1);
+  var dayKey = now.getUTCFullYear() + mo + d;
+
+  var store = "pcpass_" + key + "_" + dayKey, code = null;
+  try { code = window.localStorage.getItem(store); } catch (e) {}
+  if (!code) {
+    var letters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", rnd = "";
+    for (var i = 0; i < 3; i++) rnd += letters.charAt(Math.floor(Math.random() * letters.length));
+    code = v.prefix + "-" + d + mo + "-" + rnd;
+    try { window.localStorage.setItem(store, code); } catch (e) {}
+  }
+
+  document.getElementById("passno").textContent = code;
+  document.getElementById("scandate").textContent = d + "/" + mo;
+  document.getElementById("scantime").textContent =
+    p(now.getUTCHours()) + ":" + p(now.getUTCMinutes()) + " Thailand";
+})();
+</script>
+</body>
+</html>
