@@ -465,46 +465,159 @@
 }catch(e){} })();
 </script>
 
-<script id="pcru">
+
+
+<script id="pcl10n">
 (function(){
-  var box=document.getElementById('islandrates'); if(!box||box.children.length<3) return;
-  var head=box.children[0], bw=box.children[1], tip=box.children[2], bl=bw.children;
-  if(bl.length<3) return;
-  var rl=null, all=document.querySelectorAll('div,p,span');
-  for(var i=0;i<all.length;i++){ var t=all[i].textContent||''; if(all[i].children.length===0 && t.length<180 && t.indexOf('Island rate')>-1 && t.indexOf('ATM')>-1){ rl=all[i]; break; } }
-  var EN={h:head.innerHTML,b:[bl[0].innerHTML,bl[1].innerHTML,bl[2].innerHTML],t:tip.innerHTML,r:rl?rl.innerHTML:''};
-  var RU={
-    h:'Прежде чем сравнивать с Бангкоком…',
-    b:['🏝️ <b>На острове курс немного ниже</b> — во всех обменниках Ко Чанга, не только у нас. Каждая купюра приезжает сюда на пароме.',
-       '🏧 <b>Альтернатива на острове — банкомат:</b> комиссия 220 ฿ за каждое снятие, плюс комиссия вашего банка.',
-       '🚚 <b>У нас:</b> бесплатная доставка в отель, без комиссии, вы пересчитываете деньги до оплаты.'],
-    t:'Скоро возвращаетесь на материк? Поменяйте столько, сколько нужно на острове.',
-    r:'🏝️ Островной курс — одинаковый во всех обменниках Ко Чанга · без комиссии · без сбора банкомата'
-  };
-  var sw=document.createElement('div');
-  sw.style.cssText='text-align:right;margin:0 0 7px;line-height:1';
-  function mk(code,label){ var s=document.createElement('span'); s.textContent=label; s.setAttribute('data-l',code);
-    s.style.cssText='display:inline-block;font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.07em;padding:5px 10px;margin-left:5px;border:1px solid rgba(228,178,76,.55);border-radius:999px;color:#e4b24c;cursor:pointer;-webkit-user-select:none;user-select:none';
-    s.addEventListener('click',function(){ set(code,true); }); return s; }
-  sw.appendChild(mk('en','EN')); sw.appendChild(mk('ru','RU'));
-  box.insertBefore(sw,head);
-  function set(l,save){
-    var D = (l==='ru') ? RU : EN;
-    head.innerHTML=D.h; bl[0].innerHTML=D.b[0]; bl[1].innerHTML=D.b[1]; bl[2].innerHTML=D.b[2]; tip.innerHTML=D.t;
-    if(rl && D.r) rl.innerHTML=D.r;
-    var ss=sw.querySelectorAll('span');
-    for(var i=0;i<ss.length;i++){ var on = ss[i].getAttribute('data-l')===l;
-      ss[i].style.background = on ? '#e4b24c' : 'transparent';
-      ss[i].style.color = on ? '#0f2e23' : '#e4b24c'; }
-    if(save){ try{ localStorage.setItem('pclang',l); }catch(e){} }
-  }
+ var EX = {
+  "Koh Chang Cash Delivery":'Доставка наличных на Ко Чанг',
+  "Delivered in 30 minutes":'Доставка за 30 минут',
+  "Visit us — or we come to you":'Приходите к нам — или мы приедем к вам',
+  "Safe · Fast · Trusted":'Надёжно · Быстро · С доверием',
+  "Enjoy your time in Kai Bae — we come to you. We meet you securely at your hotel lobby with transparent rates, same as our counter and delivery free, arriving quietly in our hybrid vehicle to preserve Koh Chang's natural beauty. A service by":'Отдыхайте в Кай Бэ — мы приедем к вам. Мы встретим вас в лобби отеля, курс прозрачный и такой же, как в нашем обменнике, доставка бесплатная. Мы подъезжаем тихо, на гибридном автомобиле, чтобы сохранить природу Ко Чанга. Сервис от',
+  '"Change your money, not the island."':'«Меняйте деньги, а не остров.»',
+  "Before you compare with Bangkok…":'Прежде чем сравнивать с Бангкоком…',
+  "Island rates are a little lower":'На острове курс немного ниже',
+  "— at every exchange on Koh Chang, not just ours. Every note comes over on the ferry.":'— во всех обменниках Ко Чанга, не только у нас. Каждая купюра приезжает сюда на пароме.',
+  "The island alternative is the ATM:":'Альтернатива на острове — банкомат:',
+  "With us:":'У нас:',
+  "free delivery to your hotel, no commission, count the cash before you pay.":'бесплатная доставка в отель, без комиссии, вы пересчитываете деньги до оплаты.',
+  "Going back to the mainland soon? Just change what you need for the island.":'Скоро возвращаетесь на материк? Поменяйте столько, сколько нужно на острове.',
+  "What notes do you have?":'Какие у вас купюры?',
+  "Mixed notes are fine — add a line for each type. Example: ten $100 notes on one line, five $20 notes on another.":'Разные купюры — не проблема: добавьте строку для каждого номинала. Например: десять купюр по $100 одной строкой, пять по $20 — другой.',
+  "Your notes":'Ваши купюры',
+  "Rate today: pick your notes above":'Курс сегодня: выберите купюры выше',
+  "Your details":'Ваши данные',
+  "Full name (as in passport)":'Имя и фамилия (как в паспорте)',
+  "Hotel or resort name":'Название отеля или курорта',
+  "Room number":'Номер комнаты',
+  "Passport number":'Номер паспорта',
+  "Your WhatsApp number":'Ваш номер WhatsApp',
+  "(with country code — we confirm your order there)":'(с кодом страны — там мы подтверждаем заказ)',
+  "Bring this passport to the lobby — we check it before handing over cash. Thai law requires ID for currency exchange.":'Возьмите этот паспорт с собой в лобби — мы проверяем его перед выдачей наличных. По законам Таиланда для обмена валюты нужен документ.',
+  "Send your order":'Отправьте заказ',
+  "Tap the button: your order goes to our office and WhatsApp opens with the order written for you —":'Нажмите кнопку: заказ уходит в наш офис, и откроется WhatsApp с уже готовым текстом заказа —',
+  "then press the green Send ➤ in WhatsApp":'затем нажмите зелёную кнопку «Отправить» ➤ в WhatsApp',
+  "so we can chat with you. We reply within minutes to confirm, then the driver leaves.":'чтобы мы могли с вами связаться. Мы отвечаем за несколько минут, подтверждаем заказ, и водитель выезжает.',
+  "Send my order → opens WhatsApp":'Отправить заказ → откроется WhatsApp',
+  "No WhatsApp? Order another way:":'Нет WhatsApp? Закажите другим способом:',
+  "Delivery daily 10:00 – 17:00. Last order 16:30. No night deliveries.":'Доставка ежедневно с 10:00 до 17:00. Последний заказ в 16:30. Ночью доставки нет.',
+  "We meet you at your hotel lobby or reception only — never rooms, beaches or car parks.":'Мы встречаемся только в лобби или на ресепшен вашего отеля — не в номерах, не на пляже и не на парковке.',
+  "You count the cash in front of our driver, then scan our card to confirm on WhatsApp that it was counted and received — that message is your receipt.":'Вы пересчитываете деньги при водителе, затем сканируете нашу карточку и подтверждаете в WhatsApp, что деньги пересчитаны и получены — это сообщение и есть ваша квитанция.',
+  "Torn or marked notes get a lower rate, or may be declined at our discretion.":'Порванные или испачканные купюры принимаются по более низкому курсу или могут быть не приняты.',
+  "Rates are valid for same-day delivery only. Orders delivered the next day are confirmed on WhatsApp at that day's rate before the driver leaves.":'Курс действует только для доставки в тот же день. Заказы на следующий день подтверждаются в WhatsApp по курсу того дня перед выездом водителя.',
+  "Prefer to pay by card?":'Хотите оплатить картой?',
+  "Our driver carries a card machine, so you can pay by":'У нашего водителя есть терминал, поэтому в отеле вы можете заплатить картой',
+  "Visa or Mastercard":'Visa или Mastercard',
+  "at your hotel instead of cash.":'вместо наличных.',
+  "The card is charged the cash amount":'С карты списывается сумма наличных',
+  "— for example":'— например,',
+  "Prefer to visit? We have a real office":'Хотите зайти к нам? У нас есть настоящий офис',
+  "You're welcome to exchange at our counter instead — same rates, no minimum. Come say hello and see who you're dealing with.":'Вы можете обменять деньги прямо у нас в офисе — тот же курс, без минимальной суммы. Заходите познакомиться и посмотреть, с кем имеете дело.',
+  "Open in Google Maps":'Открыть в Google Картах',
+  "Who you're dealing with — Peyton & Charmed Group":'С кем вы имеете дело — Peyton & Charmed Group',
+  "U-Tapao International Airport":'Международный аэропорт У-Тапао',
+  "— our counter in the arrivals hall: currency exchange, private transfers and tours.":'— наша стойка в зале прилёта: обмен валюты, трансферы и экскурсии.',
+  "Koh Chang, Kai Bae":'Ко Чанг, Кай Бэ',
+  "— our licensed exchange office and tour centre (this page).":'— наш лицензированный обменный пункт и турцентр (эта страница).',
+  "Bangkok":'Бангкок',
+  "— Peyton & Charmed Group head office.":'— головной офис Peyton & Charmed Group.',
+  "London":'Лондон',
+  "— Peyton & Charmed branch.":'— филиал Peyton & Charmed.',
+  "Peyton & Charmed · Koh Chang · licensed currency exchange · rates updated every morning":'Peyton & Charmed · Ко Чанг · лицензированный обмен валюты · курсы обновляются каждое утро'
+ };
+ var RULES = [
+  [/^(.*)Recommended by your hotel — thank you! We'll look after you\.$/, "$1Вас рекомендовал ваш отель — спасибо! Мы о вас позаботимся."],
+  [/^(.*)Eco-friendly delivery to your hotel — in 30 minutes$/, "$1Экологичная доставка в ваш отель — за 30 минут"],
+  [/^(.*)Island rate — the same at every counter on Koh Chang · no commission · no ATM fee$/, "$1Островной курс — одинаковый во всех обменниках Ко Чанга · без комиссии · без сбора банкомата"],
+  [/^(.+) fee every time, plus your own bank's charges\.$/, "комиссия $1 за каждое снятие, плюс комиссия вашего банка."],
+  [/^(.*)Add another currency or note size$/, "$1Добавить валюту или номинал"],
+  [/^(.*)Copy my order — send by LINE, SMS or email$/, "$1Скопировать заказ — отправить в LINE, SMS или на почту"],
+  [/^(.*)Call us: (.+)$/, "$1Позвоните нам: $2"],
+  [/^You receive: (.*)$/, "Вы получаете: $1"],
+  [/^Rate today: (.*)$/, "Курс сегодня: $1"],
+  [/^✓ Live rate from our counter · (.+)$/, "✓ Актуальный курс нашего обменника · $1"],
+  [/^Minimum for delivery is (\S+) in foreign currency \(for example ([^)]+)\)\..*$/, "Минимальная сумма доставки — $1 в иностранной валюте (например, $2). Меньшую сумму мы с радостью обменяем в нашем офисе — тот же курс, без минимума."],
+  [/^Maximum per delivery is (\S+) in foreign currency \(for example ([^)]+)\)\..*$/, "Максимальная сумма одной доставки — $1 в иностранной валюте (например, $2). Для больших сумм приезжайте, пожалуйста, в наш офис — будем рады помочь."],
+  [/^Minimum (\S+), maximum (\S+) in foreign currency per delivery \(e\.g\. ([^)]+)\)\..*$/, "Минимум $1, максимум $2 в иностранной валюте за одну доставку (например, $3). Меньшие или большие суммы — добро пожаловать в наш офис."],
+  [/^We're outside delivery hours right now \(last order ([^)]+)\)\..*$/, "Сейчас мы вне часов доставки (последний заказ в $1). Вы всё равно можете отправить заказ — утром мы подтвердим его по курсу того дня и привезём деньги."],
+  [/^LINE \/ email: (\S+) · we confirm every order before the driver leaves\.$/, "LINE / эл. почта: $1 · мы подтверждаем каждый заказ до выезда водителя."],
+  [/^plus ([\d.,]+)%$/, "плюс $1%"],
+  [/^([\d,]+) baht of cash = ([\d,]+) on the card$/, "$1 бат наличными = $2 с карты"],
+  [/^([\d,]+) – ([\d,]+) baht\. The cardholder must be present with their passport\.$/, "$1 – $2 бат. Держатель карты должен присутствовать с паспортом."],
+  [/^An established travel and real-estate company since (\d{4}), with real offices you can walk into — on Koh Chang, at U-Tapao airport, in Bangkok and in London\.$/, "Туристическая компания и агентство недвижимости с $1 года, с настоящими офисами, куда можно прийти: на Ко Чанге, в аэропорту У-Тапао, в Бангкоке и в Лондоне."],
+  [/^page version (.+)$/, "версия страницы $1"]
+ ];
+ var PH = { "Amount":'Сумма' };
+ function K(s){ return s.replace(/\s+/g,' ').trim().replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"'); }
+ function tr(s){
+  var k=K(s); if(k.length<2) return null;
+  var v=EX[k];
+  if(v==null){ for(var i=0;i<RULES.length;i++){ if(RULES[i][0].test(k)){ v=k.replace(RULES[i][0],RULES[i][1]); break; } } }
+  if(v==null||v===k) return null;
+  var lead=(s.match(/^\s*/)||[''])[0], tail=(s.match(/\s*$/)||[''])[0];
+  return lead+v+tail;
+ }
+ var orig=new Map(), wrote=new Map(), lang='en', T0=document.title;
+ function texts(root){
+  var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), a=[], n;
+  while(n=w.nextNode()){ var p=n.parentElement; if(!p) continue;
+   if(/SCRIPT|STYLE|TEXTAREA/.test(p.tagName)) continue;
+   if(p.closest && p.closest('#pclangbar')) continue;
+   if(n.nodeValue.trim().length<2) continue; a.push(n); }
+  return a;
+ }
+ function one(n){
+  if(!orig.has(n)) orig.set(n,n.nodeValue);
+  var want=orig.get(n);
+  if(lang==='ru'){ var t=tr(orig.get(n)); if(t!=null) want=t; }
+  if(n.nodeValue!==want){ n.nodeValue=want; wrote.set(n,want); }
+ }
+ function phs(){
+  var ins=document.querySelectorAll('input[placeholder]');
+  for(var i=0;i<ins.length;i++){ var el=ins[i];
+   if(el.getAttribute('data-ph0')==null) el.setAttribute('data-ph0', el.placeholder);
+   var o=el.getAttribute('data-ph0'), v=o;
+   if(lang==='ru' && PH[K(o)]) v=PH[K(o)];
+   if(el.placeholder!==v) el.placeholder=v; }
+ }
+ function applyAll(root){
+  var list=texts(root||document.body); for(var i=0;i<list.length;i++) one(list[i]);
+  phs(); document.title=(lang==='ru'&&EX[K(T0)])?EX[K(T0)]:T0;
+ }
+ var bar=document.createElement('div'); bar.id='pclangbar';
+ bar.style.cssText='position:sticky;top:0;z-index:99999;display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 12px;background:#0b2b22;border-bottom:1px solid rgba(228,178,76,.45);box-shadow:0 2px 12px rgba(0,0,0,.3)';
+ var g=document.createElement('span'); g.textContent='🌐'; g.style.cssText='font-size:15px;opacity:.85'; bar.appendChild(g);
+ function mkb(code,label){
+  var b=document.createElement('button'); b.type='button'; b.textContent=label; b.setAttribute('data-l',code);
+  b.style.cssText='font:700 13px/1 Inter,system-ui,-apple-system,sans-serif;letter-spacing:.03em;padding:9px 18px;border-radius:999px;border:1px solid rgba(228,178,76,.6);background:transparent;color:#e4b24c;cursor:pointer';
+  b.addEventListener('click',function(){ setLang(code,true); }); return b;
+ }
+ bar.appendChild(mkb('en','English')); bar.appendChild(mkb('ru','Русский'));
+ function paint(){ var bs=bar.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){ var on=bs[i].getAttribute('data-l')===lang;
+   bs[i].style.background=on?'#e4b24c':'transparent'; bs[i].style.color=on?'#0b2b22':'#e4b24c'; } }
+ function setLang(l,save){ lang=(l==='ru')?'ru':'en'; document.documentElement.lang=lang; applyAll(); paint();
+  if(save){ try{ localStorage.setItem('pclang',lang); }catch(e){} } }
+ function start(){
+  document.body.insertBefore(bar, document.body.firstChild);
   var pref=''; try{ pref=localStorage.getItem('pclang')||''; }catch(e){}
-  if(pref!=='ru' && pref!=='en'){
-    var ru=/^ru/i.test(navigator.language||'');
-    if(!ru && navigator.languages){ for(var k=0;k<navigator.languages.length;k++){ if(/^ru/i.test(navigator.languages[k])){ ru=true; break; } } }
-    pref = ru ? 'ru' : 'en';
-  }
-  set(pref,false);
+  if(pref!=='ru'&&pref!=='en'){
+   var ru=/^ru/i.test(navigator.language||'');
+   if(!ru&&navigator.languages){ for(var k=0;k<navigator.languages.length;k++){ if(/^ru/i.test(navigator.languages[k])){ ru=true; break; } } }
+   pref=ru?'ru':'en'; }
+  setLang(pref,false);
+  var mo=new MutationObserver(function(ms){
+   for(var i=0;i<ms.length;i++){ var m=ms[i];
+    if(m.type==='characterData'){ var n=m.target; if(n.nodeType!==3) continue;
+     if(wrote.get(n)===n.nodeValue) continue; orig.set(n,n.nodeValue); one(n); }
+    else { for(var j=0;j<m.addedNodes.length;j++){ var nd=m.addedNodes[j];
+     if(nd.nodeType===1){ if(nd.id!=='pclangbar') applyAll(nd); }
+     else if(nd.nodeType===3){ orig.set(nd,nd.nodeValue); one(nd); } } } }
+  });
+  mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
 </script>
 </body></html>
