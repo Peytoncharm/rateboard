@@ -464,4 +464,47 @@
   hits.forEach(function(x){ x.nodeValue = x.nodeValue.replace(/\b300\b/g, "100"); });
 }catch(e){} })();
 </script>
+
+<script id="pcru">
+(function(){
+  var box=document.getElementById('islandrates'); if(!box||box.children.length<3) return;
+  var head=box.children[0], bw=box.children[1], tip=box.children[2], bl=bw.children;
+  if(bl.length<3) return;
+  var rl=null, all=document.querySelectorAll('div,p,span');
+  for(var i=0;i<all.length;i++){ var t=all[i].textContent||''; if(all[i].children.length===0 && t.length<180 && t.indexOf('Island rate')>-1 && t.indexOf('ATM')>-1){ rl=all[i]; break; } }
+  var EN={h:head.innerHTML,b:[bl[0].innerHTML,bl[1].innerHTML,bl[2].innerHTML],t:tip.innerHTML,r:rl?rl.innerHTML:''};
+  var RU={
+    h:'Прежде чем сравнивать с Бангкоком…',
+    b:['🏝️ <b>На острове курс немного ниже</b> — во всех обменниках Ко Чанга, не только у нас. Каждая купюра приезжает сюда на пароме.',
+       '🏧 <b>Альтернатива на острове — банкомат:</b> комиссия 220 ฿ за каждое снятие, плюс комиссия вашего банка.',
+       '🚚 <b>У нас:</b> бесплатная доставка в отель, без комиссии, вы пересчитываете деньги до оплаты.'],
+    t:'Скоро возвращаетесь на материк? Поменяйте столько, сколько нужно на острове.',
+    r:'🏝️ Островной курс — одинаковый во всех обменниках Ко Чанга · без комиссии · без сбора банкомата'
+  };
+  var sw=document.createElement('div');
+  sw.style.cssText='text-align:right;margin:0 0 7px;line-height:1';
+  function mk(code,label){ var s=document.createElement('span'); s.textContent=label; s.setAttribute('data-l',code);
+    s.style.cssText='display:inline-block;font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.07em;padding:5px 10px;margin-left:5px;border:1px solid rgba(228,178,76,.55);border-radius:999px;color:#e4b24c;cursor:pointer;-webkit-user-select:none;user-select:none';
+    s.addEventListener('click',function(){ set(code,true); }); return s; }
+  sw.appendChild(mk('en','EN')); sw.appendChild(mk('ru','RU'));
+  box.insertBefore(sw,head);
+  function set(l,save){
+    var D = (l==='ru') ? RU : EN;
+    head.innerHTML=D.h; bl[0].innerHTML=D.b[0]; bl[1].innerHTML=D.b[1]; bl[2].innerHTML=D.b[2]; tip.innerHTML=D.t;
+    if(rl && D.r) rl.innerHTML=D.r;
+    var ss=sw.querySelectorAll('span');
+    for(var i=0;i<ss.length;i++){ var on = ss[i].getAttribute('data-l')===l;
+      ss[i].style.background = on ? '#e4b24c' : 'transparent';
+      ss[i].style.color = on ? '#0f2e23' : '#e4b24c'; }
+    if(save){ try{ localStorage.setItem('pclang',l); }catch(e){} }
+  }
+  var pref=''; try{ pref=localStorage.getItem('pclang')||''; }catch(e){}
+  if(pref!=='ru' && pref!=='en'){
+    var ru=/^ru/i.test(navigator.language||'');
+    if(!ru && navigator.languages){ for(var k=0;k<navigator.languages.length;k++){ if(/^ru/i.test(navigator.languages[k])){ ru=true; break; } } }
+    pref = ru ? 'ru' : 'en';
+  }
+  set(pref,false);
+})();
+</script>
 </body></html>
