@@ -94,7 +94,7 @@
 
   <section class="card" aria-labelledby="s1">
     <div class="step"><span class="n">1</span><h2 id="s1">What notes do you have?</h2></div>
-    <p style="margin:0 0 10px; color:var(--muted); font-size:.95rem">Mixed notes are fine — add a line for each type. Example: ten $100 notes on one line, five $20 notes on another.</p>
+    <p style="margin:0 0 10px; color:var(--muted); font-size:.95rem">Mixed notes are fine — add a line for each type. Example: ten $300 notes on one line, five $20 notes on another.</p>
     <label>Your notes</label>
     <div id="rows"></div>
     <button type="button" class="addbtn" id="addRow">＋ Add another currency or note size</button>
@@ -103,7 +103,7 @@
       <div class="thb" id="thbOut">You receive: —</div>
       <div class="fine" id="rateSrc" style="display:none; color:var(--leaf); margin-top:6px"></div>
     </div>
-    <p class="warn" id="minWarn">Minimum for delivery is 100 in foreign currency (for example €100 or $100). For smaller amounts you are very welcome at our office — same rate, no minimum.</p>
+    <p class="warn" id="minWarn">Minimum for delivery is 300 in foreign currency (for example €300 or $300). For smaller amounts you are very welcome at our office — same rate, no minimum.</p>
     <p class="warn" id="maxWarn">Maximum per delivery is 2,000 in foreign currency (for example €2,000). For larger amounts please visit our office — we are happy to help.</p>
   </section>
 
@@ -141,9 +141,9 @@
 
   <section class="card">
     <ul class="rules">
-      <li>Delivery daily 10:00 – 22:00. Last order 21:30. No night deliveries.</li>
+      <li>Delivery daily 10:00 – 17:00. Last order 16:30. No night deliveries.</li>
       <li>We meet you at your hotel lobby or reception only — never rooms, beaches or car parks.</li>
-      <li>Minimum 100, maximum 2,000 in foreign currency per delivery (e.g. €100 – €2,000). Smaller or larger amounts are welcome at our office.</li>
+      <li>Minimum 300, maximum 2,000 in foreign currency per delivery (e.g. €300 – €2,000). Smaller or larger amounts are welcome at our office.</li>
       <li>You count the cash in front of our driver, then scan our card to confirm on WhatsApp that it was counted and received — that message is your receipt.</li>
       <li>Torn or marked notes get a lower rate, or may be declined at our discretion.</li>
       <li>Rates are valid for same-day delivery only. Orders delivered the next day are confirmed on WhatsApp at that day's rate before the driver leaves.</li>
@@ -178,14 +178,14 @@
   var WHATSAPP = "66889877070"; // Peyton & Charmed WhatsApp Business (088-987-7070)
   var RATES = [
     {code:"EUR",  label:"€ EUR",        rate:35.38},
-    {code:"USD",  label:"$ USD 100/50", rate:31.47},
+    {code:"USD",  label:"$ USD 300/50", rate:31.47},
     {code:"USDS", label:"$ USD 20/5",   rate:29.79},
     {code:"GBP",  label:"£ GBP",        rate:42.36},
     {code:"CHF",  label:"CHF",          rate:38.24},
     {code:"AUD",  label:"A$ AUD",       rate:21.13},
     {code:"CAD",  label:"C$ CAD",       rate:21.53}
   ];
-  var MIN_FX = 100, MAX_FX = 2000; // in foreign-currency units (any currency), per delivery
+  var MIN_FX = 300, MAX_FX = 2000; // in foreign-currency units (any currency), per delivery
 
   // --- Referral code: auto-fill from ?ref= in the web address, then keep the field editable ---
   (function(){
@@ -291,7 +291,7 @@
     var note = document.getElementById("closedNote");
     if(closed){
       note.style.display = "block";
-      note.textContent = "We're outside delivery hours right now (last order 21:30). You can still send your order — we'll confirm it next morning at that day's rate before delivering.";
+      note.textContent = "We're outside delivery hours right now (last order 16:30). You can still send your order — we'll confirm it next morning at that day's rate before delivering.";
     } else { note.style.display = "none"; }
 
     var btn = document.getElementById("waBtn");
@@ -438,4 +438,19 @@
   document.addEventListener("visibilitychange", function(){ if(!document.hidden) loadLiveRates(); });
 </script>
 
+<script>
+(function(){ try{
+  var VENUE_MIN_100 = ["KC007"];
+  var m = /[?&]ref=([A-Za-z0-9_-]+)/i.exec(window.location.search);
+  if(!m) return;
+  if(VENUE_MIN_100.indexOf(m[1].toUpperCase()) === -1) return;
+  try{ MIN_FX = 100; }catch(e){}
+  try{ window.MIN_FX = 100; }catch(e){}
+  var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, hits = [];
+  while((n = w.nextNode())){
+    if(/\b300\b/.test(n.nodeValue) && /[\u20AC$\u00A3]|minimum|Minimum|currency/.test(n.parentNode ? n.parentNode.textContent : "")) hits.push(n);
+  }
+  hits.forEach(function(x){ x.nodeValue = x.nodeValue.replace(/\b300\b/g, "100"); });
+}catch(e){} })();
+</script>
 </body></html>
