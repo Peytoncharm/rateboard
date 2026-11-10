@@ -110,7 +110,11 @@ function load(){
   }).catch(hold);
 }
 load();
-setInterval(load, 5*60*1000);              // pick up a mid-day change within 5 minutes
+setInterval(load, 2*60*1000);              // pick up a mid-day change within 2 minutes
 addEventListener('focus', load);
 document.addEventListener('visibilitychange', function(){ if(!document.hidden) load(); });
+// Reload the whole page every hour. If the browser ever throttles the timer above,
+// or a script error stops it, this gets the board back on today's numbers by itself
+// so nobody has to remember to press F5 on the monitor.
+setTimeout(function(){ location.reload(); }, 60*60*1000);
 </script></body></html>
