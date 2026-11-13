@@ -58,6 +58,11 @@ body{font-family:Arial,Helvetica,sans-serif;font-weight:700;color:#0b1420}
 var SHEET_ID = '1dSCN5ba-t6D-HBYTtBwbnOVBBeGwch8oF3lKkzG-sCU';
 var URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
           '/gviz/tq?tqx=out:csv&headers=0&sheet=Rate_Table&range=A1:D13';
+// Optional override tab (added 13 Nov 2026): while Screen_Rates!A1 is today's date, the monitor
+// shows the numbers in Screen_Rates column B instead of the Rate_Table-derived ones. Still never
+// above what the till pays (capped at the Rate_Table POS price).
+var URL2 = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+          '/gviz/tq?tqx=out:csv&headers=0&sheet=Screen_Rates&range=A1:B9';
 var KEYS = ['USD 100','USD 20','EUR','GBP','CHF','AUD','CAD'];
 
 function fit(){
@@ -87,8 +92,23 @@ function shown(v, key){
 function hold(){ document.getElementById('hold').style.display = 'flex'; }
 function show(){ document.getElementById('hold').style.display = 'none'; }
 
+function sameDay(a, b){ return !isNaN(a) && a.getDate() === b.getDate() && a.getMonth() === b.getMonth(); }
+function loadOverride(){
+  // Returns {} unless Screen_Rates is dated today; any failure just means "no override".
+  return fetch(URL2, {cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){
+    if(/^\s*</.test(t)) return {};
+    var rows = parseCSV(t), d = new Date((rows[0] && rows[0][0] || '').trim()), o = {};
+    if (!sameDay(d, new Date())) return {};
+    rows.forEach(function(r){
+      var name = (r[0]||'').trim(), v = parseFloat(String(r[1]||'').replace(/,/g,''));
+      if (name && isFinite(v) && v > 5 && v < 80) o[name] = v;
+    });
+    return o;
+  }).catch(function(){ return {}; });
+}
 function load(){
-  fetch(URL, {cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){
+  Promise.all([fetch(URL, {cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }), loadOverride()]).then(function(res){
+    var t = res[0], over = res[1] || {};
     if(/^\s*</.test(t)) throw 0;
     var rows = parseCSV(t), dateText = (rows[0] && rows[0][0] || '').trim(), vals = {};
     rows.forEach(function(r){
@@ -98,7 +118,11 @@ function load(){
     var filled = 0;
     KEYS.forEach(function(k){
       var el = document.querySelector('.row[data-key="' + k + '"]');
-      if (el && typeof vals[k] === 'number') { el.querySelector('.rt').textContent = shown(vals[k], k); filled++; }
+      if (el && typeof vals[k] === 'number') {
+        var s = shown(vals[k], k), pos = Math.round(vals[k]*100)/100;
+        if (typeof over[k] === 'number' && over[k] <= pos) s = over[k].toFixed(4);   // override, capped at POS
+        el.querySelector('.rt').textContent = s; filled++;
+      }
     });
     var d = new Date(dateText), today = new Date();
     var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
