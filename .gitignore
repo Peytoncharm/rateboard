@@ -1,0 +1,3 @@
+# Intermediate file written by counter-sheet/make_sheet.py on the way to today.pdf.
+# Only today.pdf is published; sheet.html is rebuilt on every run.
+counter-sheet/sheet.html
