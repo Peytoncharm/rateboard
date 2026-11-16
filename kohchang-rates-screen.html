@@ -60,9 +60,12 @@ var URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
           '/gviz/tq?tqx=out:csv&headers=0&sheet=Rate_Table&range=A1:D13';
 // Optional override tab (added 13 Nov 2026): while Screen_Rates!A1 is today's date, the monitor
 // shows the numbers in Screen_Rates column B instead of the Rate_Table-derived ones. Still never
-// above what the till pays (capped at the Rate_Table POS price).
+// above what the till pays: column C of that tab holds the StoreHub price and is the cap.
+// Column C is used because Rate_Table moves with the bank each morning while the till does not,
+// so the sheet's own price is not a safe cap on a day the two are out of step (16 Nov 2026).
+// If column C is blank or not a number, the Rate_Table price is used as the cap instead.
 var URL2 = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-          '/gviz/tq?tqx=out:csv&headers=0&sheet=Screen_Rates&range=A1:B9';
+          '/gviz/tq?tqx=out:csv&headers=0&sheet=Screen_Rates&range=A1:C9';
 var KEYS = ['USD 100','USD 20','EUR','GBP','CHF','AUD','CAD'];
 
 function fit(){
@@ -101,7 +104,10 @@ function loadOverride(){
     if (!sameDay(d, new Date())) return {};
     rows.forEach(function(r){
       var name = (r[0]||'').trim(), v = parseFloat(String(r[1]||'').replace(/,/g,''));
-      if (name && isFinite(v) && v > 5 && v < 80) o[name] = v;
+      var till = parseFloat(String(r[2]||'').replace(/,/g,''));
+      if (name && isFinite(v) && v > 5 && v < 80) {
+        o[name] = { show: v, till: (isFinite(till) && till > 5 && till < 80) ? till : null };
+      }
     });
     return o;
   }).catch(function(){ return {}; });
@@ -120,7 +126,10 @@ function load(){
       var el = document.querySelector('.row[data-key="' + k + '"]');
       if (el && typeof vals[k] === 'number') {
         var s = shown(vals[k], k), pos = Math.round(vals[k]*100)/100;
-        if (typeof over[k] === 'number' && over[k] <= pos) s = over[k].toFixed(4);   // override, capped at POS
+        if (over[k]) {                                  // cap on the till price, not the sheet's
+          var cap = (over[k].till !== null) ? over[k].till : pos;
+          if (over[k].show <= cap) s = over[k].show.toFixed(4);
+        }
         el.querySelector('.rt').textContent = s; filled++;
       }
     });
