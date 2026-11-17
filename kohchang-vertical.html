@@ -21,6 +21,35 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;cursor:none}
   <img class="logo" src="kohchang-video/logo.png" alt="Peyton &amp; Charmed Group">
   <div class="caption"><b>Welcome to Koh Chang</b><span>Money Exchange &middot; Tours &middot; Transfers</span></div>
 </div>
+<div id="fshint">Click anywhere for full screen</div>
+<style>
+#fshint{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;
+  font:600 18px/1.3 Arial,Helvetica,sans-serif;color:#fff;background:rgba(0,0,0,.62);
+  padding:12px 22px;border-radius:999px;letter-spacing:.3px;pointer-events:none;
+  transition:opacity .5s;opacity:1}
+#fshint.gone{opacity:0}
+body.hidecursor,body.hidecursor *{cursor:none}
+</style>
+<script>
+// One click puts the screen into full screen - browsers will not do it on their own, but they
+// allow it on the first click or key press. The hint fades away once it has happened (or after
+// 12 seconds), and the mouse pointer hides itself when it has been still for 3 seconds.
+(function(){
+  var hint=document.getElementById('fshint'), done=false;
+  function go(){
+    if(done) return; done=true;
+    var el=document.documentElement;
+    var req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+    if(req) try{ req.call(el); }catch(e){}
+    hint.className='gone';
+  }
+  addEventListener('click',go); addEventListener('keydown',go); addEventListener('touchstart',go);
+  setTimeout(function(){ hint.className='gone'; },12000);
+  var t; function stir(){ document.body.classList.remove('hidecursor');
+    clearTimeout(t); t=setTimeout(function(){ document.body.classList.add('hidecursor'); },3000); }
+  addEventListener('mousemove',stir); stir();
+})();
+</script>
 <script>
 // The monitor stands upright but the laptop sends a landscape picture, so turn the design by 90 degrees
 // (same as the old board). Add ?flip if it is upside down, ?noturn to switch turning off.
